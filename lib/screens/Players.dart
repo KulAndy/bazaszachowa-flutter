@@ -1,6 +1,6 @@
 import 'dart:async';
-
-import 'package:bazaszachowa_flutter/ApiConfig..dart';
+import 'package:bazaszachowa_flutter/ApiConfig.dart';
+import 'package:bazaszachowa_flutter/screens/Player.dart';
 import 'package:flutter/material.dart';
 import 'package:bazaszachowa_flutter/components/app/Menu.dart';
 
@@ -15,7 +15,7 @@ class Players extends StatefulWidget {
 
 class _PlayersState extends State<Players> {
   final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _searchResults = [];
+  List<String> _searchResults = [];
   bool _isSearching = false;
   Timer? _debounceTimer;
 
@@ -43,28 +43,30 @@ class _PlayersState extends State<Players> {
 
   Future<void> _searchPlayers(String query) async {
     if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-      });
+      setState(() => _searchResults = []);
       return;
     }
 
-    setState(() {
-      _isSearching = true;
-    });
+    setState(() => _isSearching = true);
 
     try {
       final results = await ApiConfig.searchPlayer(query);
-      setState(() {
-        _searchResults = results;
-      });
+      setState(() => _searchResults = results);
     } catch (e) {
-      _searchResults = [];
+      setState(() => _searchResults = []);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Wystąpił błąd')));
     } finally {
-      setState(() {
-        _isSearching = false;
-      });
+      setState(() => _isSearching = false);
     }
+  }
+
+  void _navigateToPlayerPage(String playerName) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Player(playerName: playerName)),
+    );
   }
 
   @override
@@ -99,7 +101,10 @@ class _PlayersState extends State<Players> {
                   itemBuilder: (context, index) {
                     final player = _searchResults[index];
                     return Card(
-                      child: ListTile(title: Text(player), onTap: () {}),
+                      child: ListTile(
+                        title: Text(player),
+                        onTap: () => _navigateToPlayerPage(player),
+                      ),
                     );
                   },
                 ),
