@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(color: Color(0xFF05445E)),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Baza szachowa'),
+      home: const Home(title: 'Baza szachowa'),
       debugShowCheckedModeBanner: false,
     );
   }
