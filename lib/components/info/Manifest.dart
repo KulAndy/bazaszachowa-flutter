@@ -1,18 +1,11 @@
+import 'package:bazaszachowa_flutter/components/app/Link.dart';
 import 'package:bazaszachowa_flutter/components/app/Separator.dart';
+import 'package:bazaszachowa_flutter/main.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Manifest extends StatelessWidget {
   const Manifest({super.key});
-
-  Future<void> _launchURL(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,28 +23,22 @@ class Manifest extends StatelessWidget {
         RichText(
           text: TextSpan(
             children: <TextSpan>[
-              TextSpan(
+              Link(
                 text: 'honor',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () =>
-                      _launchURL('https://pl.wikipedia.org/wiki/Honor_(etyka)'),
+                href: 'https://pl.wikipedia.org/wiki/Honor_(etyka)',
+                context: context,
               ),
               const TextSpan(text: ', '),
-              TextSpan(
+              Link(
                 text: 'godność człowieka',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () =>
-                      _launchURL('https://pl.wikipedia.org/wiki/Godność'),
+                context: context,
+                href: 'https://pl.wikipedia.org/wiki/Godność',
               ),
               const TextSpan(text: ' i '),
-              TextSpan(
+              Link(
                 text: 'postawa fair play',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () =>
-                      _launchURL('https://pl.wikipedia.org/wiki/Fair_play'),
+                context: context,
+                href: 'https://pl.wikipedia.org/wiki/Fair_play',
               ),
               const TextSpan(text: '.'),
             ],
@@ -65,12 +52,10 @@ class Manifest extends StatelessWidget {
                 text:
                     'Baza partii będzie aktualizowana mniej więcej raz na miesiąc i można z niej korzystać w zgodzie z zamieszczoną na stronie ',
               ),
-              TextSpan(
+              Link(
                 text: 'licencją',
-                style: const TextStyle(color: Colors.blue),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () =>
-                      _launchURL('https://bazaszachowa.smallhost.pl/license/'),
+                context: context,
+                href: 'https://bazaszachowa.smallhost.pl/license/',
               ),
               const TextSpan(text: ' 🍺.'),
             ],

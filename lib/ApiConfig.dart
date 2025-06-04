@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
 import 'package:bazaszachowa_flutter/types/PlayerRangeStats.dart';
+import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
 import 'package:http/http.dart' as http;
 
 class ApiConfig {
   static const String baseUrl = 'https://api.bazaszachowa.smallhost.pl';
   static const String searchPlayersEndpoint = '/search_player';
   static const String minMaxYearElo = '/min_max_year_elo';
+  static const String polandPlayer = '/cr_data';
+  static const String fidePlayer = '/fide_data';
 
   static String _getSearchPlayersUrl(String query) {
     return '$baseUrl$searchPlayersEndpoint/${Uri.encodeComponent(query)}';
@@ -13,6 +17,14 @@ class ApiConfig {
 
   static String _getSearchMinMaxYearEloUrl(String query) {
     return '$baseUrl$minMaxYearElo/${Uri.encodeComponent(query)}';
+  }
+
+  static String _getSearchPolandPlayersUrl(String query) {
+    return '$baseUrl$polandPlayer/${Uri.encodeComponent(query)}';
+  }
+
+  static String _getSearchFidePlayersUrl(String query) {
+    return '$baseUrl$fidePlayer/${Uri.encodeComponent(query)}';
   }
 
   static Future<List<String>> searchPlayer(String name) async {
@@ -61,6 +73,64 @@ class ApiConfig {
       }
     } catch (e) {
       throw Exception('MinMaxYearElo search error: $e');
+    }
+  }
+
+  static Future<List<PolandPlayer>> searchPolandPlayers(String name) async {
+    try {
+      final response = await http.get(
+        Uri.parse(_getSearchPolandPlayersUrl(name)),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isEmpty) {
+          throw Exception('Data is empty');
+        }
+
+        return data.map((item) {
+          if (item is Map<String, dynamic>) {
+            return PolandPlayer.fromJson(item);
+          } else {
+            throw Exception('Unexpected data format for item: $item');
+          }
+        }).toList();
+      } else {
+        throw Exception(
+          'Failed to fetch year/elo data: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('poland [players search error: $e');
+    }
+  }
+
+  static Future<List<FidePlayer>> searchFidePlayers(String name) async {
+    try {
+      final response = await http.get(
+        Uri.parse(_getSearchFidePlayersUrl(name)),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isEmpty) {
+          throw Exception('Data is empty');
+        }
+
+        return data.map((item) {
+          if (item is Map<String, dynamic>) {
+            return FidePlayer.fromJson(item);
+          } else {
+            throw Exception('Unexpected data format for item: $item');
+          }
+        }).toList();
+      } else {
+        throw Exception(
+          'Failed to fetch year/elo data: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('poland [players search error: $e');
     }
   }
 }

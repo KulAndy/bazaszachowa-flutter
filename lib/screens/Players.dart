@@ -42,7 +42,8 @@ class _PlayersState extends State<Players> {
   }
 
   Future<void> _searchPlayers(String query) async {
-    if (query.isEmpty) {
+    String trimmedQuery = query.trim();
+    if (trimmedQuery.isEmpty) {
       setState(() => _searchResults = []);
       return;
     }
@@ -50,7 +51,7 @@ class _PlayersState extends State<Players> {
     setState(() => _isSearching = true);
 
     try {
-      final results = await ApiConfig.searchPlayer(query);
+      final results = await ApiConfig.searchPlayer(trimmedQuery);
       setState(() => _searchResults = results);
     } catch (e) {
       setState(() => _searchResults = []);

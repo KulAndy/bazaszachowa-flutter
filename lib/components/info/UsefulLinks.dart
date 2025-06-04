@@ -1,3 +1,5 @@
+import 'package:bazaszachowa_flutter/components/app/Link.dart';
+import 'package:bazaszachowa_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,23 +15,6 @@ class UsefulLinks extends StatelessWidget {
     'Najlepszy silnik szachowy': ['https://stockfishchess.org/'],
     'W pełni wolna strona szachowa': ['https://lichess.org/'],
   };
-
-  Future<void> _launchURL(BuildContext context, String url) async {
-    Uri uri = Uri.parse(url);
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not launch $url')));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error launching URL: $e')));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,15 +32,8 @@ class UsefulLinks extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: entry.value.map((url) {
-                    return GestureDetector(
-                      onTap: () => _launchURL(context, url),
-                      child: Text(
-                        _extractDomain(url),
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                    return RichText(
+                      text: Link(text: url, href: url, context: context),
                     );
                   }).toList(),
                 ),
