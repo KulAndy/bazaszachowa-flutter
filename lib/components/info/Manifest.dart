@@ -69,7 +69,8 @@ class Manifest extends StatelessWidget {
                 text: 'licencją',
                 style: const TextStyle(color: Colors.blue),
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () => _launchURL('https://example.com/license'),
+                  ..onTap = () =>
+                      _launchURL('https://bazaszachowa.smallhost.pl/license/'),
               ),
               const TextSpan(text: ' 🍺.'),
             ],

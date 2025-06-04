@@ -1,4 +1,5 @@
 import 'package:bazaszachowa_flutter/screens/Home.dart';
+import 'package:bazaszachowa_flutter/screens/Players.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -23,6 +24,17 @@ class Menu extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => Home(title: "Strona główna"),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.person_search),
+            title: const Text("Zawodnicy"),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Players(title: "Zawodnicy"),
                 ),
               );
             },
