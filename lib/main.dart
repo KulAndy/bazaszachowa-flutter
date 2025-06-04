@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'screens/Home.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -12,43 +14,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Baza szachowa',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFF189ab4),
+        colorScheme: ColorScheme.light(
+          primary: const Color(0xFF189AB4),
+          primaryContainer: const Color(0xFF75E6DA),
+          secondary: const Color(0xFF05445E),
+          secondaryContainer: const Color(0xFFD4F1F4),
+          surface: const Color(0xFF033C47),
+          error: Colors.red,
+          onPrimary: Colors.white,
+          onSecondary: Colors.white,
+          onSurface: Colors.white,
           brightness: Brightness.light,
         ),
+        appBarTheme: const AppBarTheme(color: Color(0xFF05445E)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Baza szachowa'),
+      home: const HomePage(title: 'Baza szachowa'),
       debugShowCheckedModeBanner: false,
-      debugShowMaterialGrid: false,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[const Text('Strona główna')],
-        ),
-      ),
     );
   }
 }
