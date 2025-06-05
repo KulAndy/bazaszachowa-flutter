@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
+import 'package:bazaszachowa_flutter/types/OpeningStats.dart';
 import 'package:bazaszachowa_flutter/types/PlayerRangeStats.dart';
 import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +11,7 @@ class ApiConfig {
   static const String minMaxYearElo = '/min_max_year_elo';
   static const String polandPlayer = '/cr_data';
   static const String fidePlayer = '/fide_data';
+  static const String openingStats = '/player_opening_stats';
 
   static String _getSearchPlayersUrl(String query) {
     return '$baseUrl$searchPlayersEndpoint/${Uri.encodeComponent(query)}';
@@ -25,6 +27,10 @@ class ApiConfig {
 
   static String _getSearchFidePlayersUrl(String query) {
     return '$baseUrl$fidePlayer/${Uri.encodeComponent(query)}';
+  }
+
+  static String _getOpeningStatsUrl(String query) {
+    return '$baseUrl$openingStats/${Uri.encodeComponent(query)}';
   }
 
   static Future<List<String>> searchPlayer(String name) async {
@@ -131,6 +137,27 @@ class ApiConfig {
       }
     } catch (e) {
       throw Exception('poland [players search error: $e');
+    }
+  }
+
+  static Future<OpeningStats> searchOpeningStats(String name) async {
+    try {
+      final response = await http.get(Uri.parse(_getOpeningStatsUrl(name)));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data.isEmpty) {
+          throw Exception('Data is empty');
+        }
+
+        return OpeningStats.fromJson(data);
+      } else {
+        throw Exception(
+          'Failed to fetch opening stats: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Failed to search opening stats: $e');
     }
   }
 }

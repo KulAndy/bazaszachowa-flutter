@@ -1,7 +1,5 @@
 import 'package:bazaszachowa_flutter/components/app/Link.dart';
-import 'package:bazaszachowa_flutter/main.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class UsefulLinks extends StatelessWidget {
   final Map<String, List<String>> links = {
