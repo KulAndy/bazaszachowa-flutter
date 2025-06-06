@@ -4,6 +4,7 @@ import 'package:bazaszachowa_flutter/components/player/ColorStatsData.dart';
 import 'package:bazaszachowa_flutter/components/player/FideData.dart';
 import 'package:bazaszachowa_flutter/components/player/PolishData.dart';
 import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
+import 'package:bazaszachowa_flutter/types/Game.dart';
 import 'package:bazaszachowa_flutter/types/OpeningStats.dart';
 import 'package:bazaszachowa_flutter/types/PlayerRangeStats.dart';
 import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
@@ -25,6 +26,7 @@ class _PlayerState extends State<Player> {
   List<PolandPlayer>? _polandPlayers;
   List<FidePlayer>? _fidePlayers;
   OpeningStats? _openingStats;
+  List<Game>? _games;
 
   @override
   void initState() {
@@ -35,10 +37,6 @@ class _PlayerState extends State<Player> {
   @override
   void didUpdateWidget(Player oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print("update");
-    print(widget.playerName);
-    print(widget.color);
-    print(widget.opening);
     if (oldWidget.playerName != widget.playerName) {
       refresh();
     }
@@ -49,6 +47,7 @@ class _PlayerState extends State<Player> {
     _fetchPolandPlayer();
     _fetchFidePlayer();
     _fetchOpeningStats();
+    _fetchGames();
   }
 
   Future<void> _fetchPlayerRangeStats() async {
@@ -92,6 +91,31 @@ class _PlayerState extends State<Player> {
       });
     } catch (e) {
       setState(() => _openingStats = null);
+    }
+  }
+
+  Future<void> _fetchGames() async {
+    try {
+      List<Game>? games = null;
+      if (widget.color == null) {
+        games = (await ApiConfig.searchGames(
+          white: widget.playerName,
+          ignore: true,
+          base: 'all',
+          searching: 'fulltext',
+        )).games;
+      } else {
+        games = await ApiConfig.searchFilterGames(
+          widget.playerName,
+          widget.color!,
+          widget.opening,
+        );
+      }
+      setState(() {
+        _games = games;
+      });
+    } catch (e) {
+      setState(() => _games = null);
     }
   }
 
@@ -170,6 +194,29 @@ class _PlayerState extends State<Player> {
                   ),
                 ),
               ],
+              const SizedBox(height: 20),
+              if (_games == null)
+                const CircularProgressIndicator()
+              else
+                Table(
+                  border: TableBorder.all(),
+                  children: _games!.map((item) {
+                    return TableRow(
+                      children: [
+                        TableCell(child: Text(item.white)),
+                        TableCell(
+                          child: Center(child: Text(item.result ?? '*')),
+                        ),
+                        TableCell(child: Text(item.black)),
+                        TableCell(
+                          child: Text(
+                            '${item.year}.${item.month != null ? item.month.toString().padLeft(2, '0') : '??'}.${item.day != null ? item.day.toString().padLeft(2, '0') : '??'}',
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
             ],
           ),
         ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
+import 'package:bazaszachowa_flutter/types/Game.dart';
 import 'package:bazaszachowa_flutter/types/OpeningStats.dart';
 import 'package:bazaszachowa_flutter/types/PlayerRangeStats.dart';
 import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
@@ -12,6 +13,8 @@ class ApiConfig {
   static const String polandPlayer = '/cr_data';
   static const String fidePlayer = '/fide_data';
   static const String openingStats = '/player_opening_stats';
+  static const String games = '/search_game';
+  static const String filterGames = '/search_player_opening_game';
 
   static String _getSearchPlayersUrl(String query) {
     return '$baseUrl$searchPlayersEndpoint/${Uri.encodeComponent(query)}';
@@ -31,6 +34,45 @@ class ApiConfig {
 
   static String _getOpeningStatsUrl(String query) {
     return '$baseUrl$openingStats/${Uri.encodeComponent(query)}';
+  }
+
+  static Uri _getGamesUrl({
+    String white = "",
+    String black = "",
+    bool ignore = false,
+    int? minYear,
+    int? maxYear,
+    String event = "",
+    int minEco = 1,
+    int maxEco = 500,
+    String base = "all",
+    String searching = "classic",
+  }) {
+    final queryParameters = <String, String>{
+      'white': white,
+      'black': black,
+      'ignore': ignore.toString(),
+      if (minYear != null) 'minYear': minYear.toString(),
+      if (maxYear != null) 'maxYear': maxYear.toString(),
+      'event': event,
+      'minEco': minEco.toString(),
+      'maxEco': maxEco.toString(),
+      'base': base,
+      'searching': searching,
+    };
+
+    return Uri.parse(
+      '$baseUrl$games',
+    ).replace(queryParameters: queryParameters);
+  }
+
+  static String _getFilterGamesUrl(String name, String color, String? opening) {
+    String url =
+        '$baseUrl$filterGames/${Uri.encodeComponent(name)}/${Uri.encodeComponent(color)}';
+    if (opening != null) {
+      url += '/${Uri.encodeComponent(opening)}';
+    }
+    return url;
   }
 
   static Future<List<String>> searchPlayer(String name) async {
@@ -160,4 +202,98 @@ class ApiConfig {
       throw Exception('Failed to search opening stats: $e');
     }
   }
+
+  static Future<GameResponse> searchGames({
+    String white = "",
+    String black = "",
+    bool ignore = false,
+    int? minYear,
+    int? maxYear,
+    String event = "",
+    int minEco = 1,
+    int maxEco = 500,
+    String base = "all",
+    String searching = "classic",
+  }) async {
+    try {
+      final response = await http.get(
+        _getGamesUrl(
+          white: white,
+          black: black,
+          ignore: ignore,
+          minYear: minYear,
+          maxYear: maxYear,
+          event: event,
+          minEco: minEco,
+          maxEco: maxEco,
+          base: base,
+          searching: searching,
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data.isEmpty) {
+          throw Exception('Data is empty');
+        }
+
+        if (!data.containsKey('rows') || !data.containsKey('table')) {
+          throw Exception('Incorrect data');
+        }
+
+        return GameResponse(
+          table: data['table'],
+          games: (data['rows'] as List).map((item) {
+            if (item is Map<String, dynamic>) {
+              return Game.fromJson(item);
+            } else {
+              throw Exception('Unexpected data format for item: $item');
+            }
+          }).toList(),
+        );
+      } else {
+        throw Exception('Failed to fetch games: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to search games: $e');
+    }
+  }
+
+  static Future<List<Game>> searchFilterGames(
+    String name,
+    String color,
+    String? opening,
+  ) async {
+    try {
+      final response = await http.get(
+        Uri.parse(_getFilterGamesUrl(name, color, opening)),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isEmpty) {
+          throw Exception('Data is empty');
+        }
+
+        return data.map((item) {
+          if (item is Map<String, dynamic>) {
+            return Game.fromJson(item);
+          } else {
+            throw Exception('Unexpected data format for item: $item');
+          }
+        }).toList();
+      } else {
+        throw Exception('Failed to fetch filter games: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to search filter games: $e');
+    }
+  }
+}
+
+class GameResponse {
+  final String table;
+  final List<Game> games;
+
+  GameResponse({required this.table, required this.games});
 }
