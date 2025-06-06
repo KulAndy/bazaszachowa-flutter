@@ -31,7 +31,7 @@ class PolishData extends StatelessWidget {
                 Center(
                   child: Text(
                     item.name,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 Table(
@@ -43,41 +43,48 @@ class PolishData extends StatelessWidget {
                   children: [
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("Tytuł/Kat")),
-                          TableCell(child: Text(item.title)),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("Tytuł/Kat"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(item.title),
                           ),
                         ),
                       ],
                     ),
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("CR ID")),
-                          TableCell(child: Text(item.polandId.toString())),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("CR ID"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(item.polandId.toString()),
                           ),
                         ),
                       ],
                     ),
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("FIDE ID")),
-                          TableCell(
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("FIDE ID"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
                             child: Text(item.fideId?.toString() ?? 'N/A'),
-                          ),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
                           ),
                         ),
                       ],

@@ -16,7 +16,7 @@ class FideData extends StatelessWidget {
                 Center(
                   child: Text(
                     item.name,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 Table(
@@ -28,48 +28,55 @@ class FideData extends StatelessWidget {
                   children: [
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("ID")),
-                          TableCell(child: Text(item.fideId.toString())),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("ID"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(item.fideId.toString()),
                           ),
                         ),
                       ],
                     ),
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("Tytuł")),
-                          TableCell(child: Text(item.title ?? "Brak")),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("Tytuł"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(item.title ?? "Brak"),
                           ),
                         ),
                       ],
                     ),
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("Rocznik")),
-                          TableCell(
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("Rocznik"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
                             child: Text(item.birthYear?.toString() ?? "N/A"),
-                          ),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
                           ),
                         ),
                       ],
                     ),
                   ],
                 ),
-                Center(
+                const Center(
                   child: Text(
                     "Elo",
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -84,47 +91,50 @@ class FideData extends StatelessWidget {
                   children: [
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("Klasyczne")),
-                          TableCell(
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("Klasyczne"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
                             child: Text(
                               item.standardRating?.toString() ?? "N/A",
                             ),
                           ),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
-                          ),
                         ),
                       ],
                     ),
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("Szybkie")),
-                          TableCell(
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("Szybkie"),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
                             child: Text(item.rapidRating?.toString() ?? "N/A"),
                           ),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
-                          ),
                         ),
                       ],
                     ),
                     TableRow(
                       children: [
-                        ...[
-                          TableCell(child: Text("Błyskawiczne")),
-                          TableCell(
-                            child: Text(item.blitzRating?.toString() ?? "N/A"),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text("Błyskawiczne"),
                           ),
-                        ].map(
-                          (item) => Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: item,
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(item.blitzRating?.toString() ?? "N/A"),
                           ),
                         ),
                       ],

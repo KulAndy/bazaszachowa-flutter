@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 
 class Player extends StatefulWidget {
   final String playerName;
+  final String? color;
+  final String? opening;
 
-  const Player({super.key, required this.playerName});
+  const Player({super.key, required this.playerName, this.opening, this.color});
 
   @override
   State<Player> createState() => _PlayerState();
@@ -33,6 +35,10 @@ class _PlayerState extends State<Player> {
   @override
   void didUpdateWidget(Player oldWidget) {
     super.didUpdateWidget(oldWidget);
+    print("update");
+    print(widget.playerName);
+    print(widget.color);
+    print(widget.opening);
     if (oldWidget.playerName != widget.playerName) {
       refresh();
     }
@@ -135,14 +141,25 @@ class _PlayerState extends State<Player> {
                   colorStats: _openingStats!.white,
                   header: "Białe",
                   colorPrefix: 'white',
+                  playerName: widget.playerName,
                 ),
                 ColorStatsData(
                   colorStats: _openingStats!.black,
                   header: "Czarne",
                   colorPrefix: 'black',
+                  playerName: widget.playerName,
                 ),
                 GestureDetector(
-                  onTap: () => print("reset"),
+                  onTap: () => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Player(
+                        playerName: widget.playerName,
+                        color: null,
+                        opening: null,
+                      ),
+                    ),
+                  ),
                   child: const Text(
                     'Reset',
                     style: TextStyle(
