@@ -1,5 +1,5 @@
-import 'package:bazaszachowa_flutter/components/app/Link.dart';
-import 'package:bazaszachowa_flutter/components/app/Separator.dart';
+import 'package:bazaszachowa_flutter/components/app/link.dart';
+import 'package:bazaszachowa_flutter/components/app/separator.dart';
 import 'package:flutter/material.dart';
 
 class Manifest extends StatelessWidget {

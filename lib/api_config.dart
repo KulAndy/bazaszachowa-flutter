@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
-import 'package:bazaszachowa_flutter/types/Game.dart';
-import 'package:bazaszachowa_flutter/types/OpeningStats.dart';
-import 'package:bazaszachowa_flutter/types/PlayerRangeStats.dart';
-import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
+import 'package:bazaszachowa_flutter/types/fide_player.dart';
+import 'package:bazaszachowa_flutter/types/game.dart';
+import 'package:bazaszachowa_flutter/types/opening_stats.dart';
+import 'package:bazaszachowa_flutter/types/player_range_stats.dart';
+import 'package:bazaszachowa_flutter/types/poland_player.dart';
 import 'package:http/http.dart' as http;
 
 class ApiConfig {

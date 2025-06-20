@@ -1,5 +1,5 @@
-import 'package:bazaszachowa_flutter/components/app/Link.dart';
-import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
+import 'package:bazaszachowa_flutter/components/app/link.dart';
+import 'package:bazaszachowa_flutter/types/poland_player.dart';
 import 'package:flutter/material.dart';
 
 class PolishData extends StatelessWidget {
@@ -94,7 +94,7 @@ class PolishData extends StatelessWidget {
                 const SizedBox(height: 10),
               ],
             );
-          }).toList(),
+          }),
       ],
     );
   }

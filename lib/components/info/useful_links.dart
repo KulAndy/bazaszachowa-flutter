@@ -1,18 +1,20 @@
-import 'package:bazaszachowa_flutter/components/app/Link.dart';
+import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:flutter/material.dart';
 
+const Map<String, List<String>> links = {
+  'Alternatywa': [
+    'https://www.yottachess.com/',
+    'https://www.chessbites.com/',
+    'https://chessify.me/analysis/chess-database',
+    'https://chess-results.com/PartieSuche.aspx?lan=3',
+  ],
+  'Darmowy program szachowy': ['http://scidvspc.sourceforge.net/'],
+  'Najlepszy silnik szachowy': ['https://stockfishchess.org/'],
+  'W pełni wolna strona szachowa': ['https://lichess.org/'],
+};
+
 class UsefulLinks extends StatelessWidget {
-  final Map<String, List<String>> links = {
-    'Alternatywa': [
-      'https://www.yottachess.com/',
-      'https://www.chessbites.com/',
-      'https://chessify.me/analysis/chess-database',
-      'https://chess-results.com/PartieSuche.aspx?lan=3',
-    ],
-    'Darmowy program szachowy': ['http://scidvspc.sourceforge.net/'],
-    'Najlepszy silnik szachowy': ['https://stockfishchess.org/'],
-    'W pełni wolna strona szachowa': ['https://lichess.org/'],
-  };
+  const UsefulLinks({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +39,9 @@ class UsefulLinks extends StatelessWidget {
                 ),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );
-  }
-
-  String _extractDomain(String url) {
-    return url.replaceAll(RegExp(r'https?://|www\.|/.*$'), '');
   }
 }

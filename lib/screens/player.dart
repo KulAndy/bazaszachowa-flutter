@@ -1,13 +1,13 @@
-import 'package:bazaszachowa_flutter/ApiConfig.dart';
-import 'package:bazaszachowa_flutter/components/app/Link.dart';
-import 'package:bazaszachowa_flutter/components/player/ColorStatsData.dart';
-import 'package:bazaszachowa_flutter/components/player/FideData.dart';
-import 'package:bazaszachowa_flutter/components/player/PolishData.dart';
-import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
-import 'package:bazaszachowa_flutter/types/Game.dart';
-import 'package:bazaszachowa_flutter/types/OpeningStats.dart';
-import 'package:bazaszachowa_flutter/types/PlayerRangeStats.dart';
-import 'package:bazaszachowa_flutter/types/PolandPlayer.dart';
+import 'package:bazaszachowa_flutter/api_config.dart';
+import 'package:bazaszachowa_flutter/components/app/link.dart';
+import 'package:bazaszachowa_flutter/components/player/color_stats_data.dart';
+import 'package:bazaszachowa_flutter/components/player/fide_data.dart';
+import 'package:bazaszachowa_flutter/components/player/polish_data.dart';
+import 'package:bazaszachowa_flutter/types/fide_player.dart';
+import 'package:bazaszachowa_flutter/types/game.dart';
+import 'package:bazaszachowa_flutter/types/opening_stats.dart';
+import 'package:bazaszachowa_flutter/types/player_range_stats.dart';
+import 'package:bazaszachowa_flutter/types/poland_player.dart';
 import 'package:flutter/material.dart';
 
 class Player extends StatefulWidget {
@@ -96,7 +96,7 @@ class _PlayerState extends State<Player> {
 
   Future<void> _fetchGames() async {
     try {
-      List<Game>? games = null;
+      List<Game>? games;
       if (widget.color == null) {
         games = (await ApiConfig.searchGames(
           white: widget.playerName,

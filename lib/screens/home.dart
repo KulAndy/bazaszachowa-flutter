@@ -1,7 +1,7 @@
-import 'package:bazaszachowa_flutter/components/app/Menu.dart';
-import 'package:bazaszachowa_flutter/components/app/Separator.dart';
-import 'package:bazaszachowa_flutter/components/info/Manifest.dart';
-import 'package:bazaszachowa_flutter/components/info/UsefulLinks.dart';
+import 'package:bazaszachowa_flutter/components/app/menu.dart';
+import 'package:bazaszachowa_flutter/components/app/separator.dart';
+import 'package:bazaszachowa_flutter/components/info/manifest.dart';
+import 'package:bazaszachowa_flutter/components/info/useful_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

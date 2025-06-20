@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'package:bazaszachowa_flutter/ApiConfig.dart';
-import 'package:bazaszachowa_flutter/screens/Player.dart';
+import 'package:bazaszachowa_flutter/api_config.dart';
+import 'package:bazaszachowa_flutter/screens/player.dart';
 import 'package:flutter/material.dart';
-import 'package:bazaszachowa_flutter/components/app/Menu.dart';
+import 'package:bazaszachowa_flutter/components/app/menu.dart';
 
 class Players extends StatefulWidget {
   const Players({super.key, required this.title});
@@ -42,6 +42,7 @@ class _PlayersState extends State<Players> {
   }
 
   Future<void> _searchPlayers(String query) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     String trimmedQuery = query.trim();
     if (trimmedQuery.isEmpty) {
       setState(() => _searchResults = []);
@@ -55,9 +56,9 @@ class _PlayersState extends State<Players> {
       setState(() => _searchResults = results);
     } catch (e) {
       setState(() => _searchResults = []);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Wystąpił błąd')));
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error on search: $e')),
+      );
     } finally {
       setState(() => _isSearching = false);
     }

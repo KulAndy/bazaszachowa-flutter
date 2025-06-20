@@ -1,10 +1,10 @@
-import 'package:bazaszachowa_flutter/screens/Home.dart';
-import 'package:bazaszachowa_flutter/screens/Players.dart';
+import 'package:bazaszachowa_flutter/screens/home.dart';
+import 'package:bazaszachowa_flutter/screens/players.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Menu extends StatelessWidget {
-  const Menu({Key? key}) : super(key: key);
+  const Menu({super.key});
 
   @override
   Widget build(BuildContext context) {

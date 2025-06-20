@@ -1,5 +1,5 @@
-import 'package:bazaszachowa_flutter/screens/Player.dart';
-import 'package:bazaszachowa_flutter/types/OpeningStats.dart';
+import 'package:bazaszachowa_flutter/screens/player.dart';
+import 'package:bazaszachowa_flutter/types/opening_stats.dart';
 import 'package:flutter/material.dart';
 
 class ColorStatsData extends StatelessWidget {
@@ -9,12 +9,12 @@ class ColorStatsData extends StatelessWidget {
   final String playerName;
 
   const ColorStatsData({
-    Key? key,
+    super.key,
     required this.colorStats,
     required this.header,
     required this.colorPrefix,
     required this.playerName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,7 @@ class ColorStatsData extends StatelessWidget {
                           )
                           .toList(),
                 );
-              }).toList(),
+              }),
               TableRow(
                 children:
                     [

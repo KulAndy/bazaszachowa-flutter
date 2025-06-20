@@ -1,4 +1,4 @@
-import 'package:bazaszachowa_flutter/types/Move.dart';
+import 'package:bazaszachowa_flutter/types/move.dart';
 
 class Game {
   final int id;

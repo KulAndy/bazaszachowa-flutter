@@ -1,4 +1,4 @@
-import 'package:bazaszachowa_flutter/types/FidePlayer.dart';
+import 'package:bazaszachowa_flutter/types/fide_player.dart';
 import 'package:flutter/material.dart';
 
 class FideData extends StatelessWidget {
@@ -144,7 +144,7 @@ class FideData extends StatelessWidget {
                 const SizedBox(height: 10),
               ],
             );
-          }).toList(),
+          }),
       ],
     );
   }
