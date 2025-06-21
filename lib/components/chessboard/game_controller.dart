@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:dartchess/dartchess.dart' as dart_chess;
 import 'package:chessground/chessground.dart';
 import 'package:chess/chess.dart' as chess_lib;
@@ -9,9 +7,7 @@ import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:bazaszachowa_flutter/types/variant_move.dart';
 import 'package:bazaszachowa_flutter/components/chessboard/board.dart';
 import 'package:bazaszachowa_flutter/components/chessboard/game_bar.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:file_saver/file_saver.dart';
-import 'dart:typed_data';
+import 'package:flutter/services.dart';
 
 class GameController extends StatefulWidget {
   final Game? game;
@@ -332,9 +328,17 @@ class _GameControllerState extends State<GameController> {
 
     pgn.write("${widget.game?.result ?? '*'}");
 
-    print(pgn);
-
     return pgn.toString();
+  }
+
+  Future<void> _copyPGNToClipboard() async {
+    String pgn = _generatePGN();
+
+    await Clipboard.setData(ClipboardData(text: pgn));
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('PGN copied to clipboard')));
   }
 
   @override
@@ -418,7 +422,7 @@ class _GameControllerState extends State<GameController> {
           goToNext: _index >= _moves.length - 1 ? null : _goToNext,
           goToLast: _index >= _moves.length - 1 ? null : _goToLast,
           flip: _flip,
-          download: _generatePGN,
+          copy: _copyPGNToClipboard,
           zoomIn: _zoomIn,
           zoomOut: _zoomOut,
           index: _index,

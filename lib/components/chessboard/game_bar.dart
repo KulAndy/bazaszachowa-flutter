@@ -6,7 +6,7 @@ class GameBar extends StatefulWidget {
   final VoidCallback? goToNext;
   final VoidCallback? goToLast;
   final VoidCallback flip;
-  final VoidCallback download;
+  final VoidCallback copy;
   final VoidCallback zoomIn;
   final VoidCallback zoomOut;
   final int index;
@@ -18,7 +18,7 @@ class GameBar extends StatefulWidget {
     this.goToNext,
     this.goToLast,
     required this.flip,
-    required this.download,
+    required this.copy,
     required this.zoomIn,
     required this.zoomOut,
     required this.index,
@@ -33,7 +33,7 @@ class _GameBarState extends State<GameBar> {
 
   void _play() async {
     setState(() {
-      _playing = !_playing; // Toggle play state
+      _playing = !_playing;
     });
 
     while (_playing && widget.goToNext != null) {
@@ -84,10 +84,7 @@ class _GameBarState extends State<GameBar> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(icon: const Icon(Icons.flip), onPressed: widget.flip),
-              IconButton(
-                icon: const Icon(Icons.download),
-                onPressed: widget.download,
-              ),
+              IconButton(icon: const Icon(Icons.copy), onPressed: widget.copy),
               IconButton(
                 icon: const Icon(Icons.zoom_in),
                 onPressed: widget.zoomIn,
