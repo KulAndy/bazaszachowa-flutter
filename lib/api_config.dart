@@ -15,6 +15,7 @@ class ApiConfig {
   static const String openingStats = '/player_opening_stats';
   static const String games = '/search_game';
   static const String filterGames = '/search_player_opening_game';
+  static const String game = '/game';
 
   static String _getSearchPlayersUrl(String query) {
     return '$baseUrl$searchPlayersEndpoint/${Uri.encodeComponent(query)}';
@@ -73,6 +74,10 @@ class ApiConfig {
       url += '/${Uri.encodeComponent(opening)}';
     }
     return url;
+  }
+
+  static String _getGameUrl({int gameId = 0, String base = "all"}) {
+    return '$baseUrl$game/$base/$gameId';
   }
 
   static Future<List<String>> searchPlayer(String name) async {
@@ -287,6 +292,31 @@ class ApiConfig {
       }
     } catch (e) {
       throw Exception('Failed to search filter games: $e');
+    }
+  }
+
+  static Future<Game> searchGame({int gameId = 0, String base = "all"}) async {
+    try {
+      final response = await http.get(
+        Uri.parse(_getGameUrl(gameId: gameId, base: base)),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data.isEmpty) {
+          throw Exception('Data is empty');
+        }
+
+        if (data[0] is Map<String, dynamic>) {
+          return Game.fromJson(data[0]);
+        } else {
+          throw Exception('Unexpected data format');
+        }
+      } else {
+        throw Exception('Failed to search game: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Search game error: $e');
     }
   }
 }

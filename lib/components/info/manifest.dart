@@ -49,6 +49,7 @@ class Manifest extends StatelessWidget {
               const TextSpan(
                 text:
                     'Baza partii będzie aktualizowana mniej więcej raz na miesiąc i można z niej korzystać w zgodzie z zamieszczoną na stronie ',
+                style: TextStyle(color: Colors.white),
               ),
               Link(
                 text: 'licencją',

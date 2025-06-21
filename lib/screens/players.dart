@@ -75,42 +75,46 @@ class _PlayersState extends State<Players> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  labelText: 'Gracz',
-                  hintText: 'Nazwisko, Imię',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () => _searchPlayers(_searchController.text),
+      body: SafeArea(
+        bottom: true,
+        minimum: const EdgeInsets.only(bottom: 12),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    labelText: 'Gracz',
+                    hintText: 'Nazwisko, Imię',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () => _searchPlayers(_searchController.text),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              if (_isSearching)
-                const CircularProgressIndicator()
-              else if (_searchResults.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _searchResults.length,
-                  itemBuilder: (context, index) {
-                    final player = _searchResults[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(player),
-                        onTap: () => _navigateToPlayerPage(player),
-                      ),
-                    );
-                  },
-                ),
-            ],
+                const SizedBox(height: 20),
+                if (_isSearching)
+                  const CircularProgressIndicator()
+                else if (_searchResults.isNotEmpty)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      final player = _searchResults[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(player),
+                          onTap: () => _navigateToPlayerPage(player),
+                        ),
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),

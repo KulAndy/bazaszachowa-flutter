@@ -3,6 +3,7 @@ import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:bazaszachowa_flutter/components/player/color_stats_data.dart';
 import 'package:bazaszachowa_flutter/components/player/fide_data.dart';
 import 'package:bazaszachowa_flutter/components/player/polish_data.dart';
+import 'package:bazaszachowa_flutter/screens/game_view.dart';
 import 'package:bazaszachowa_flutter/types/fide_player.dart';
 import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:bazaszachowa_flutter/types/opening_stats.dart';
@@ -48,6 +49,15 @@ class _PlayerState extends State<Player> {
     _fetchFidePlayer();
     _fetchOpeningStats();
     _fetchGames();
+  }
+
+  void _navigateToGame(int gameId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GameView(gameId: gameId, base: "all"),
+      ),
+    );
   }
 
   Future<void> _fetchPlayerRangeStats() async {
@@ -123,103 +133,183 @@ class _PlayerState extends State<Player> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.playerName)),
-      body: SingleChildScrollView(
-        child: Center(
+      body: SafeArea(
+        bottom: true,
+        minimum: const EdgeInsets.only(bottom: 12),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (_playerRangeStats == null)
-                const CircularProgressIndicator()
-              else ...[
-                if (_playerRangeStats!.maxElo != null)
-                  _buildStatItem(
-                    'Najwyższy osiągnięty ranking',
-                    _playerRangeStats!.maxElo.toString(),
-                  ),
-                _buildStatItem(
-                  'Gry z lat ${_playerRangeStats!.minYear} - ${_playerRangeStats!.maxYear}',
+                const Center(child: CircularProgressIndicator())
+              else
+                Column(
+                  children: [
+                    if (_playerRangeStats!.maxElo != null)
+                      _buildStatItem(
+                        'Najwyższy osiągnięty ranking',
+                        _playerRangeStats!.maxElo.toString(),
+                      ),
+                    _buildStatItem(
+                      'Gry z lat ${_playerRangeStats!.minYear} - ${_playerRangeStats!.maxYear}',
+                    ),
+                  ],
                 ),
-              ],
+
               const SizedBox(height: 20),
+
               PolishData(polandPlayers: _polandPlayers),
+
               const SizedBox(height: 20),
+
               if (_fidePlayers == null)
-                const CircularProgressIndicator()
+                const Center(child: CircularProgressIndicator())
               else
-                RichText(
-                  text: TextSpan(
-                    children: <TextSpan>[
-                      Link(
-                        text: 'FIDE',
-                        context: context,
-                        href: 'https://www.fide.com/',
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          Link(
+                            text: 'FIDE',
+                            context: context,
+                            href: 'https://www.fide.com/',
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    FideData(fidePlayers: _fidePlayers),
+                  ],
                 ),
-              FideData(fidePlayers: _fidePlayers),
+
               const SizedBox(height: 20),
+
               if (_openingStats == null)
-                const CircularProgressIndicator()
-              else ...[
-                ColorStatsData(
-                  colorStats: _openingStats!.white,
-                  header: "Białe",
-                  colorPrefix: 'white',
-                  playerName: widget.playerName,
-                ),
-                ColorStatsData(
-                  colorStats: _openingStats!.black,
-                  header: "Czarne",
-                  colorPrefix: 'black',
-                  playerName: widget.playerName,
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Player(
-                        playerName: widget.playerName,
-                        color: null,
-                        opening: null,
-                      ),
-                    ),
-                  ),
-                  child: const Text(
-                    'Reset',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 20),
-              if (_games == null)
-                const CircularProgressIndicator()
+                const Center(child: CircularProgressIndicator())
               else
-                Table(
-                  border: TableBorder.all(),
-                  children: _games!.map((item) {
-                    return TableRow(
-                      children: [
-                        TableCell(child: Text(item.white)),
-                        TableCell(
-                          child: Center(child: Text(item.result ?? '*')),
-                        ),
-                        TableCell(child: Text(item.black)),
-                        TableCell(
-                          child: Text(
-                            '${item.year}.${item.month != null ? item.month.toString().padLeft(2, '0') : '??'}.${item.day != null ? item.day.toString().padLeft(2, '0') : '??'}',
+                Column(
+                  children: [
+                    ColorStatsData(
+                      colorStats: _openingStats!.white,
+                      header: "Białe",
+                      colorPrefix: 'white',
+                      playerName: widget.playerName,
+                    ),
+                    ColorStatsData(
+                      colorStats: _openingStats!.black,
+                      header: "Czarne",
+                      colorPrefix: 'black',
+                      playerName: widget.playerName,
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Player(
+                            playerName: widget.playerName,
+                            color: null,
+                            opening: null,
                           ),
                         ),
-                      ],
+                      ),
+                      child: const Text('Reset'),
+                    ),
+                  ],
+                ),
+
+              const SizedBox(height: 20),
+
+              if (_games == null)
+                const Center(child: CircularProgressIndicator())
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: constraints.maxWidth,
+                        ),
+                        child: Table(
+                          border: TableBorder.all(),
+                          columnWidths: const {
+                            0: FlexColumnWidth(4),
+                            1: FlexColumnWidth(2),
+                            2: FlexColumnWidth(4),
+                            3: FlexColumnWidth(3),
+                          },
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          children: [
+                            TableRow(
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withAlpha(26),
+                              ),
+                              children: [
+                                _buildTableHeader('Biały'),
+                                _buildTableHeader('Wynik'),
+                                _buildTableHeader('Czarny'),
+                                _buildTableHeader('Data'),
+                              ],
+                            ),
+
+                            ..._games!.map(
+                              (game) => TableRow(
+                                children: [
+                                  _buildTableCell(game.white, game.id),
+                                  _buildTableCenterCell(
+                                    game.result ?? '*',
+                                    game.id,
+                                  ),
+                                  _buildTableCell(game.black, game.id),
+                                  _buildTableCell(
+                                    '${game.year}.${game.month?.toString().padLeft(2, '0') ?? '??'}.${game.day?.toString().padLeft(2, '0') ?? '??'}',
+                                    game.id,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     );
-                  }).toList(),
+                  },
                 ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTableHeader(String text) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Text(
+        text,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildTableCell(String text, int gameId) {
+    return InkWell(
+      onTap: () => _navigateToGame(gameId),
+      child: Padding(padding: const EdgeInsets.all(12.0), child: Text(text)),
+    );
+  }
+
+  Widget _buildTableCenterCell(String text, int gameId) {
+    return InkWell(
+      onTap: () => _navigateToGame(gameId),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Center(child: Text(text)),
       ),
     );
   }

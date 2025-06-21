@@ -19,18 +19,22 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              SvgPicture.asset(
-                'assets/images/logo.svg',
-                semanticsLabel: 'Chess Logo',
-              ),
-              UsefulLinks(),
-              Separator(height: 10),
-              Manifest(),
-            ],
+      body: SafeArea(
+        bottom: true,
+        minimum: const EdgeInsets.only(bottom: 12),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                SvgPicture.asset(
+                  'assets/images/logo.svg',
+                  semanticsLabel: 'Chess Logo',
+                ),
+                UsefulLinks(),
+                Separator(height: 10),
+                Manifest(),
+              ],
+            ),
           ),
         ),
       ),
