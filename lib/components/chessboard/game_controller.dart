@@ -326,7 +326,7 @@ class _GameControllerState extends State<GameController> {
       pgn.write("${move.san} ");
     }
 
-    pgn.write("${widget.game?.result ?? '*'}");
+    pgn.write(widget.game?.result ?? '*');
 
     return pgn.toString();
   }

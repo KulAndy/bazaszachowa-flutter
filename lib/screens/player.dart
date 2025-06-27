@@ -51,11 +51,15 @@ class _PlayerState extends State<Player> {
     _fetchGames();
   }
 
-  void _navigateToGame(int gameId) {
+  void _navigateToGame(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GameView(gameId: gameId, base: "all"),
+        builder: (context) => GameView(
+          games: (_games ?? []).map((item) => item.id).toList(),
+          index: index,
+          base: "all",
+        ),
       ),
     );
   }
@@ -257,22 +261,24 @@ class _PlayerState extends State<Player> {
                               ],
                             ),
 
-                            ..._games!.map(
-                              (game) => TableRow(
+                            ..._games!.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final game = entry.value;
+                              return TableRow(
                                 children: [
-                                  _buildTableCell(game.white, game.id),
+                                  _buildTableCell(game.white, index),
                                   _buildTableCenterCell(
                                     game.result ?? '*',
-                                    game.id,
+                                    index,
                                   ),
-                                  _buildTableCell(game.black, game.id),
+                                  _buildTableCell(game.black, index),
                                   _buildTableCell(
                                     '${game.year}.${game.month?.toString().padLeft(2, '0') ?? '??'}.${game.day?.toString().padLeft(2, '0') ?? '??'}',
-                                    game.id,
+                                    index,
                                   ),
                                 ],
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                         ),
                       ),
@@ -297,16 +303,16 @@ class _PlayerState extends State<Player> {
     );
   }
 
-  Widget _buildTableCell(String text, int gameId) {
+  Widget _buildTableCell(String text, int index) {
     return InkWell(
-      onTap: () => _navigateToGame(gameId),
+      onTap: () => _navigateToGame(index),
       child: Padding(padding: const EdgeInsets.all(12.0), child: Text(text)),
     );
   }
 
-  Widget _buildTableCenterCell(String text, int gameId) {
+  Widget _buildTableCenterCell(String text, int index) {
     return InkWell(
-      onTap: () => _navigateToGame(gameId),
+      onTap: () => _navigateToGame(index),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Center(child: Text(text)),

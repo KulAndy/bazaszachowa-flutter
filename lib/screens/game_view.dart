@@ -4,10 +4,17 @@ import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:bazaszachowa_flutter/components/chessboard/game_controller.dart';
 
 class GameView extends StatefulWidget {
-  final int gameId;
   final String base;
+  final List<int> games;
+  final int index;
+  int get gameId => games[index];
 
-  const GameView({super.key, required this.gameId, required this.base});
+  const GameView({
+    super.key,
+    required this.base,
+    required this.games,
+    required this.index,
+  });
 
   @override
   State<GameView> createState() => _GameViewState();
@@ -25,7 +32,9 @@ class _GameViewState extends State<GameView> {
   @override
   void didUpdateWidget(GameView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.gameId != widget.gameId || oldWidget.base != widget.base) {
+    if (oldWidget.games != widget.games ||
+        oldWidget.index != widget.index ||
+        oldWidget.base != widget.base) {
       _fetchGame();
     }
   }
@@ -66,6 +75,74 @@ class _GameViewState extends State<GameView> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.first_page),
+                              onPressed: widget.index == 0
+                                  ? null
+                                  : () => Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => GameView(
+                                          index: 0,
+                                          base: widget.base,
+                                          games: widget.games,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.navigate_before),
+                              onPressed: widget.index == 0
+                                  ? null
+                                  : () => Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => GameView(
+                                          index: widget.index - 1,
+                                          base: widget.base,
+                                          games: widget.games,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.navigate_next),
+                              onPressed: widget.index == widget.games.length - 1
+                                  ? null
+                                  : () => Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => GameView(
+                                          index: widget.index + 1,
+                                          base: widget.base,
+                                          games: widget.games,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.last_page),
+                              onPressed: widget.index == widget.games.length - 1
+                                  ? null
+                                  : () => Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => GameView(
+                                          index: widget.games.length - 1,
+                                          base: widget.base,
+                                          games: widget.games,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Text(
