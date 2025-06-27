@@ -1,7 +1,10 @@
 import 'package:bazaszachowa_flutter/screens/home.dart';
 import 'package:bazaszachowa_flutter/screens/players.dart';
+import 'package:bazaszachowa_flutter/screens/games.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});
@@ -19,7 +22,7 @@ class Menu extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.home_filled),
-            title: const Text("Strona głowna"),
+            title: const Text("Strona główna"),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -36,6 +39,29 @@ class Menu extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => Players(title: "Zawodnicy"),
                 ),
+              );
+            },
+          ),
+          ListTile(
+            leading: SizedBox(
+              width: 32,
+              height: 40,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  FaIcon(FontAwesomeIcons.chessBoard, size: 20),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 12),
+                  ),
+                ],
+              ),
+            ),
+            title: const Text("Partie"),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => Games(title: "Partie")),
               );
             },
           ),
