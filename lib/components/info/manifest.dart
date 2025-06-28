@@ -1,12 +1,24 @@
 import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:bazaszachowa_flutter/components/app/separator.dart';
 import 'package:flutter/material.dart';
+import 'package:bazaszachowa_flutter/screens/license.dart';
+import 'package:flutter/gestures.dart';
 
 class Manifest extends StatelessWidget {
   const Manifest({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TapGestureRecognizer recognizer = TapGestureRecognizer()
+      ..onTap = () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const License(title: "Licencja"),
+          ),
+        );
+      };
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -42,19 +54,22 @@ class Manifest extends StatelessWidget {
             ],
           ),
         ),
-        Separator(height: 10),
+        const Separator(height: 10),
         RichText(
           text: TextSpan(
+            style: const TextStyle(color: Colors.white),
             children: <TextSpan>[
               const TextSpan(
                 text:
                     'Baza partii będzie aktualizowana mniej więcej raz na miesiąc i można z niej korzystać w zgodzie z zamieszczoną na stronie ',
-                style: TextStyle(color: Colors.white),
               ),
-              Link(
-                text: 'licencją',
-                context: context,
-                href: 'https://bazaszachowa.smallhost.pl/license/',
+              TextSpan(
+                text: "licencją",
+                style: const TextStyle(
+                  color: Colors.lightBlue,
+                  decoration: TextDecoration.underline,
+                ),
+                recognizer: recognizer,
               ),
               const TextSpan(text: ' 🍺.'),
             ],

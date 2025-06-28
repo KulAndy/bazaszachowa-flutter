@@ -1,4 +1,5 @@
 import 'package:bazaszachowa_flutter/screens/home.dart';
+import 'package:bazaszachowa_flutter/screens/license.dart';
 import 'package:bazaszachowa_flutter/screens/players.dart';
 import 'package:bazaszachowa_flutter/screens/games.dart';
 
@@ -62,6 +63,17 @@ class Menu extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => Games(title: "Partie")),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.policy),
+            title: const Text("Licencja"),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => License(title: "Licencja"),
+                ),
               );
             },
           ),
