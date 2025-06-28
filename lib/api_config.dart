@@ -50,12 +50,12 @@ class ApiConfig {
     String searching = "classic",
   }) {
     final queryParameters = <String, String>{
-      'white': white,
-      'black': black,
+      'white': white.trim(),
+      'black': black.trim(),
       'ignore': ignore.toString(),
       if (minYear != null) 'minYear': minYear.toString(),
       if (maxYear != null) 'maxYear': maxYear.toString(),
-      'event': event,
+      'event': event.trim(),
       'minEco': minEco.toString(),
       'maxEco': maxEco.toString(),
       'base': base,

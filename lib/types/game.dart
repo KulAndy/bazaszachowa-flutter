@@ -14,7 +14,6 @@ class Game {
   final int? whiteElo;
   final int? blackElo;
   final String? eco;
-
   final List<Move> moves;
 
   Game({
@@ -36,18 +35,18 @@ class Game {
 
   factory Game.fromJson(Map<String, dynamic> json) {
     return Game(
-      id: json['id'],
-      year: json['Year'],
+      id: json['id'] ?? 0,
+      year: json['Year'] ?? 0,
       month: json['Month'],
       day: json['Day'],
-      moves: (json['moves'] as List)
+      moves: (json['moves'] as List? ?? [])
           .map((item) => Move.fromJson(item))
           .toList(),
       event: json['Event'],
       site: json['Site'],
       round: json['Round'],
-      white: json['White'],
-      black: json['Black'],
+      white: json['White'] ?? '',
+      black: json['Black'] ?? '',
       result: json['Result'],
       whiteElo: json['WhiteElo'],
       blackElo: json['BlackElo'],
@@ -61,7 +60,7 @@ class Game {
       "Year": year,
       "Month": month,
       "Day": day,
-      "moves": moves.map((item) => item.toJson()),
+      "moves": moves.map((item) => item.toJson()).toList(),
       "Event": event,
       "Site": site,
       "Round": round,

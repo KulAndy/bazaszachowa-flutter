@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:bazaszachowa_flutter/components/player/game_table.dart';
 import 'package:flutter/material.dart';
+import 'package:bazaszachowa_flutter/api_config.dart';
+import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:bazaszachowa_flutter/components/app/menu.dart';
 
 class Games extends StatefulWidget {
@@ -21,41 +24,41 @@ class _GamesState extends State<Games> {
   bool _ignoreColors = false;
   int _minYear = 1475;
   int _maxYear = DateTime.now().year;
-  String _minEco = 'A00';
-  String _maxEco = 'E99';
-  String _database = 'Polska';
-  String _searchType = 'zwykłe';
+  int _minEcoValue = 1;
+  int _maxEcoValue = 500;
+  String _database = 'all';
+  String _searchType = 'classic';
 
   final FocusNode _minYearFocusNode = FocusNode();
   final FocusNode _maxYearFocusNode = FocusNode();
 
   Timer? _debounceTimer;
 
-  List<String> get _ecoCodes {
-    List<String> ecoCodes = [];
+  List<Map<String, dynamic>> get _ecoCodes {
+    List<Map<String, dynamic>> ecoCodes = [];
+    int index = 1;
     for (int i = 0; i < 5; i++) {
       String letter = String.fromCharCode('A'.codeUnitAt(0) + i);
       for (int j = 0; j < 100; j++) {
         String number = j.toString().padLeft(2, '0');
-        ecoCodes.add('$letter$number');
+        ecoCodes.add({'label': '$letter$number', 'value': index});
+        index++;
       }
     }
     return ecoCodes;
   }
+
+  List<Game>? _games;
 
   @override
   void initState() {
     super.initState();
     _minYearController.text = _minYear.toString();
     _maxYearController.text = _maxYear.toString();
-    _searchControllerWhite.addListener(_onSearchChanged);
-    _searchControllerBlack.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
-    _searchControllerWhite.removeListener(_onSearchChanged);
-    _searchControllerBlack.removeListener(_onSearchChanged);
     _searchControllerWhite.dispose();
     _searchControllerBlack.dispose();
     _tournamentController.dispose();
@@ -65,13 +68,6 @@ class _GamesState extends State<Games> {
     _maxYearFocusNode.dispose();
     _debounceTimer?.cancel();
     super.dispose();
-  }
-
-  void _onSearchChanged() {
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      // Handle search logic here
-    });
   }
 
   void _updateYear({bool isMinYear = true, required String value}) {
@@ -85,7 +81,6 @@ class _GamesState extends State<Games> {
         }
       });
     }
-    // Unfocus the text field after updating the year
     if (isMinYear) {
       _minYearFocusNode.unfocus();
     } else {
@@ -93,18 +88,24 @@ class _GamesState extends State<Games> {
     }
   }
 
-  void _printQueryParameters() {
-    print('Query Parameters:');
-    print('White: ${_searchControllerWhite.text}');
-    print('Black: ${_searchControllerBlack.text}');
-    print('Tournament: ${_tournamentController.text}');
-    print('Ignore Colors: $_ignoreColors');
-    print('Min Year: $_minYear');
-    print('Max Year: $_maxYear');
-    print('Min ECO: $_minEco');
-    print('Max ECO: $_maxEco');
-    print('Database: $_database');
-    print('Search Type: $_searchType');
+  void _fetchGames() async {
+    GameResponse response = await ApiConfig.searchGames(
+      white: _searchControllerWhite.text,
+      black: _searchControllerBlack.text,
+      event: _tournamentController.text,
+      ignore: _ignoreColors,
+      minYear: _minYear,
+      maxYear: _maxYear,
+      minEco: _minEcoValue,
+      maxEco: _maxEcoValue,
+      base: _database,
+      searching: _searchType,
+    );
+
+    setState(() {
+      _games = response.games;
+      _database = response.table;
+    });
   }
 
   @override
@@ -195,42 +196,42 @@ class _GamesState extends State<Games> {
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _minEco,
+                      child: DropdownButtonFormField<int>(
+                        value: _minEcoValue,
                         decoration: const InputDecoration(
                           labelText: 'Min ECO',
                           border: OutlineInputBorder(),
                         ),
-                        items: _ecoCodes.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                        items: _ecoCodes.map((item) {
+                          return DropdownMenuItem<int>(
+                            value: item['value'],
+                            child: Text(item['label']),
                           );
                         }).toList(),
                         onChanged: (newValue) {
                           setState(() {
-                            _minEco = newValue!;
+                            _minEcoValue = newValue!;
                           });
                         },
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _maxEco,
+                      child: DropdownButtonFormField<int>(
+                        value: _maxEcoValue,
                         decoration: const InputDecoration(
                           labelText: 'Max ECO',
                           border: OutlineInputBorder(),
                         ),
-                        items: _ecoCodes.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                        items: _ecoCodes.map((item) {
+                          return DropdownMenuItem<int>(
+                            value: item['value'],
+                            child: Text(item['label']),
                           );
                         }).toList(),
                         onChanged: (newValue) {
                           setState(() {
-                            _maxEco = newValue!;
+                            _maxEcoValue = newValue!;
                           });
                         },
                       ),
@@ -242,7 +243,7 @@ class _GamesState extends State<Games> {
                   children: [
                     const Text("Baza:"),
                     Radio<String>(
-                      value: 'Polska',
+                      value: 'poland',
                       groupValue: _database,
                       onChanged: (String? value) {
                         setState(() {
@@ -252,7 +253,7 @@ class _GamesState extends State<Games> {
                     ),
                     const Text("Polska"),
                     Radio<String>(
-                      value: 'całość',
+                      value: 'all',
                       groupValue: _database,
                       onChanged: (String? value) {
                         setState(() {
@@ -267,7 +268,7 @@ class _GamesState extends State<Games> {
                   children: [
                     const Text("Wyszukiwanie:"),
                     Radio<String>(
-                      value: 'zwykłe',
+                      value: 'classic',
                       groupValue: _searchType,
                       onChanged: (String? value) {
                         setState(() {
@@ -277,7 +278,7 @@ class _GamesState extends State<Games> {
                     ),
                     const Text("Zwykłe"),
                     Radio<String>(
-                      value: 'dokładne',
+                      value: 'fulltext',
                       groupValue: _searchType,
                       onChanged: (String? value) {
                         setState(() {
@@ -294,10 +295,14 @@ class _GamesState extends State<Games> {
                     backgroundColor: const Color(0xFF05445E),
                     foregroundColor: Colors.white,
                   ),
-
-                  onPressed: _printQueryParameters,
+                  onPressed: _fetchGames,
                   child: const Text('Szukaj'),
                 ),
+                const SizedBox(height: 20),
+                if (_games != null) ...[
+                  Text("Znaleziono ${_games!.length}"),
+                  GameTable(games: _games!, base: 'all'),
+                ],
               ],
             ),
           ),

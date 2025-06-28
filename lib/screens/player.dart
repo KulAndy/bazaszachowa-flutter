@@ -2,8 +2,8 @@ import 'package:bazaszachowa_flutter/api_config.dart';
 import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:bazaszachowa_flutter/components/player/color_stats_data.dart';
 import 'package:bazaszachowa_flutter/components/player/fide_data.dart';
+import 'package:bazaszachowa_flutter/components/player/game_table.dart';
 import 'package:bazaszachowa_flutter/components/player/polish_data.dart';
-import 'package:bazaszachowa_flutter/screens/game_view.dart';
 import 'package:bazaszachowa_flutter/types/fide_player.dart';
 import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:bazaszachowa_flutter/types/opening_stats.dart';
@@ -49,19 +49,6 @@ class _PlayerState extends State<Player> {
     _fetchFidePlayer();
     _fetchOpeningStats();
     _fetchGames();
-  }
-
-  void _navigateToGame(int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GameView(
-          games: (_games ?? []).map((item) => item.id).toList(),
-          index: index,
-          base: "all",
-        ),
-      ),
-    );
   }
 
   Future<void> _fetchPlayerRangeStats() async {
@@ -227,95 +214,13 @@ class _PlayerState extends State<Player> {
 
               if (_games == null)
                 const Center(child: CircularProgressIndicator())
-              else
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: constraints.maxWidth,
-                        ),
-                        child: Table(
-                          border: TableBorder.all(),
-                          columnWidths: const {
-                            0: FlexColumnWidth(4),
-                            1: FlexColumnWidth(2),
-                            2: FlexColumnWidth(4),
-                            3: FlexColumnWidth(3),
-                          },
-                          defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                          children: [
-                            TableRow(
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).primaryColor.withAlpha(26),
-                              ),
-                              children: [
-                                _buildTableHeader('Biały'),
-                                _buildTableHeader('Wynik'),
-                                _buildTableHeader('Czarny'),
-                                _buildTableHeader('Data'),
-                              ],
-                            ),
-
-                            ..._games!.asMap().entries.map((entry) {
-                              final index = entry.key;
-                              final game = entry.value;
-                              return TableRow(
-                                children: [
-                                  _buildTableCell(game.white, index),
-                                  _buildTableCenterCell(
-                                    game.result ?? '*',
-                                    index,
-                                  ),
-                                  _buildTableCell(game.black, index),
-                                  _buildTableCell(
-                                    '${game.year}.${game.month?.toString().padLeft(2, '0') ?? '??'}.${game.day?.toString().padLeft(2, '0') ?? '??'}',
-                                    index,
-                                  ),
-                                ],
-                              );
-                            }),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              else ...[
+                Text("Znaleziono ${_games!.length}"),
+                GameTable(games: _games!, base: 'all'),
+              ],
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTableHeader(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Text(
-        text,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _buildTableCell(String text, int index) {
-    return InkWell(
-      onTap: () => _navigateToGame(index),
-      child: Padding(padding: const EdgeInsets.all(12.0), child: Text(text)),
-    );
-  }
-
-  Widget _buildTableCenterCell(String text, int index) {
-    return InkWell(
-      onTap: () => _navigateToGame(index),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Center(child: Text(text)),
       ),
     );
   }
