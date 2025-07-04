@@ -1,6 +1,7 @@
 import 'package:bazaszachowa_flutter/api_config.dart';
 import 'package:bazaszachowa_flutter/chess_processor.dart';
 import 'package:bazaszachowa_flutter/components/chessboard/game_controller.dart';
+import 'package:bazaszachowa_flutter/components/player/game_table.dart';
 import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:chess/chess.dart' hide State;
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class _PreparationState extends State<Preparation> {
   Game _game = Game(id: 0, year: 0, moves: [], white: "N, N", black: "N, N");
   String? _fen = Chess.DEFAULT_POSITION;
   List<TableRow> _moves = [];
+  List<int> _indexes = [];
   final GlobalKey<GameControllerState> _gameControllerKey = GlobalKey();
 
   @override
@@ -54,7 +56,9 @@ class _PreparationState extends State<Preparation> {
 
   void _updateMoves() {
     if (_fen != null) {
-      _moves = _processor.searchFEN(_fen!).moves.entries.map((entry) {
+      var result = _processor.searchFEN(_fen!);
+      _indexes = result.indexes;
+      _moves = result.moves.entries.map((entry) {
         final moveData = entry.value;
         return TableRow(
           children: [
@@ -109,8 +113,12 @@ class _PreparationState extends State<Preparation> {
                 },
               ),
               Table(
+                border: TableBorder.all(),
                 children: [
-                  const TableRow(
+                  TableRow(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withAlpha(26),
+                    ),
                     children: [
                       TableCell(child: Text("Ruch")),
                       TableCell(child: Text("Ostatnio")),
@@ -121,6 +129,13 @@ class _PreparationState extends State<Preparation> {
                   ..._moves,
                 ],
               ),
+              if (_games != null)
+                GameTable(
+                  games: _games!
+                      .where((item) => _indexes.contains(item.id))
+                      .toList(),
+                  base: "all",
+                ),
             ],
           ),
         ),
