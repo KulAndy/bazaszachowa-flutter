@@ -27,6 +27,7 @@ class _PreparationState extends State<Preparation> {
   Game _game = Game(id: 0, year: 0, moves: [], white: "N, N", black: "N, N");
   String? _fen = Chess.DEFAULT_POSITION;
   List<TableRow> _moves = [];
+  final GlobalKey<GameControllerState> _gameControllerKey = GlobalKey();
 
   @override
   void initState() {
@@ -41,7 +42,6 @@ class _PreparationState extends State<Preparation> {
         widget.color,
         null,
       );
-
       await _processor.getTree(games);
       setState(() {
         _games = games;
@@ -58,7 +58,18 @@ class _PreparationState extends State<Preparation> {
         final moveData = entry.value;
         return TableRow(
           children: [
-            TableCell(child: Text(entry.key)),
+            TableCell(
+              child: GestureDetector(
+                onTap: () {
+                  _gameControllerKey.currentState?.makeMove(
+                    from: moveData.from,
+                    to: moveData.to,
+                    promotion: moveData.promotion,
+                  );
+                },
+                child: Text(entry.key),
+              ),
+            ),
             TableCell(
               child: Text(
                 moveData.years.reduce((a, b) => a > b ? a : b).toString(),
@@ -88,6 +99,7 @@ class _PreparationState extends State<Preparation> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               GameController(
+                key: _gameControllerKey,
                 game: _game,
                 onMove: (String fen) {
                   setState(() {
@@ -98,12 +110,12 @@ class _PreparationState extends State<Preparation> {
               ),
               Table(
                 children: [
-                  TableRow(
+                  const TableRow(
                     children: [
-                      const TableCell(child: Text("Move")),
-                      const TableCell(child: Text("Last Year")),
-                      const TableCell(child: Text("Games")),
-                      const TableCell(child: Text("%")),
+                      TableCell(child: Text("Ruch")),
+                      TableCell(child: Text("Ostatnio")),
+                      TableCell(child: Text("Gry")),
+                      TableCell(child: Text("%")),
                     ],
                   ),
                   ..._moves,

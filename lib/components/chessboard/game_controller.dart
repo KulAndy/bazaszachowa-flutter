@@ -16,15 +16,14 @@ class GameController extends StatefulWidget {
   const GameController({super.key, required this.game, this.onMove});
 
   @override
-  State<GameController> createState() => _GameControllerState();
+  State<GameController> createState() => GameControllerState();
 }
 
-class _GameControllerState extends State<GameController> {
+class GameControllerState extends State<GameController> {
   dart_chess.Position _position = dart_chess.Chess.initial;
   dart_chess.Side _orientation = dart_chess.Side.white;
   PlayerSide _turn = PlayerSide.white;
   dart_chess.NormalMove? _promotionMove;
-  final ScrollController _scrollController = ScrollController();
   List<VariantMove> _moves = [
     VariantMove(
       variations: [],
@@ -63,9 +62,17 @@ class _GameControllerState extends State<GameController> {
     }
   }
 
+  void makeMove({required String from, required String to, String? promotion}) {
+    String uci = "$from$to";
+    if (promotion != null) {
+      uci += promotion;
+    }
+    var move = dart_chess.NormalMove.fromUci(uci);
+    _onMove(move);
+  }
+
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
 

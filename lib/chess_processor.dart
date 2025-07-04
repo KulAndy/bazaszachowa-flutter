@@ -25,12 +25,18 @@ class MoveData {
   double points;
   List<int> years;
   Map<int, Stats> stats;
+  final String from;
+  final String to;
+  final String? promotion;
 
   MoveData({
     required this.games,
     required this.points,
     required this.years,
     required this.stats,
+    required this.from,
+    required this.to,
+    required this.promotion,
   });
 
   Map<String, dynamic> toJson() {
@@ -41,6 +47,9 @@ class MoveData {
       'stats': stats.map(
         (key, value) => MapEntry(key.toString(), value.toJson()),
       ),
+      'from': from,
+      'to': to,
+      'promotion': promotion,
     };
   }
 }
@@ -140,6 +149,9 @@ class ChessProcessor {
             }
           } else {
             fens[fen]!.moves[result['doneMove']!['san']] = MoveData(
+              from: result['doneMove']!['from'],
+              to: result['doneMove']!['to'],
+              promotion: result['doneMove']!['promotion'],
               games: 1,
               points: result['data']['points'],
               years: result['data']['years'],
@@ -153,6 +165,9 @@ class ChessProcessor {
         } else {
           fens[fen] = FenData()
             ..moves[result['doneMove']!['san']] = MoveData(
+              from: result['doneMove']!['from'],
+              to: result['doneMove']!['to'],
+              promotion: result['doneMove']!['promotion'],
               games: 1,
               points: result['data']['points'],
               years: result['data']['years'],
@@ -230,6 +245,9 @@ class ChessProcessor {
             (e) => MapEntry(
               e['move'] as String,
               MoveData(
+                from: e['from'],
+                to: e['to'],
+                promotion: e['promotion'],
                 games: e['games'] as int,
                 points: (e['points'] as num).toDouble(),
                 years: List<int>.from(e['years'] as List),
@@ -280,6 +298,9 @@ class ChessProcessor {
             moveData.years.add(result['data']['years'][0]);
           } else {
             fensObj[fen]!.moves[result['doneMove']!['san']] = MoveData(
+              from: result['doneMove']!['from'],
+              to: result['doneMove']!['to'],
+              promotion: result['doneMove']!['promotion'],
               games: 1,
               points: result['data']['points'],
               years: [result['data']['years'][0]],
@@ -289,6 +310,9 @@ class ChessProcessor {
         } else {
           fensObj[fen] = FenData()
             ..moves[result['doneMove']!['san']] = MoveData(
+              from: result['doneMove']!['from'],
+              to: result['doneMove']!['to'],
+              promotion: result['doneMove']!['promotion'],
               games: 1,
               points: result['data']['points'],
               years: [result['data']['years'][0]],
