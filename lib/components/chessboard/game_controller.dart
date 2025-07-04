@@ -10,9 +10,10 @@ import 'package:bazaszachowa_flutter/components/chessboard/game_bar.dart';
 import 'package:flutter/services.dart';
 
 class GameController extends StatefulWidget {
-  final Game? game;
+  final Game game;
+  final Function(String)? onMove;
 
-  const GameController({super.key, required this.game});
+  const GameController({super.key, required this.game, this.onMove});
 
   @override
   State<GameController> createState() => _GameControllerState();
@@ -90,7 +91,7 @@ class _GameControllerState extends State<GameController> {
 
       int counter = 1;
 
-      for (var move in widget.game!.moves) {
+      for (var move in widget.game.moves) {
         if (!chess.move({
           'from': move.from,
           'to': move.to,
@@ -176,6 +177,11 @@ class _GameControllerState extends State<GameController> {
           }
 
           _position = _position.play(move);
+
+          if (widget.onMove != null) {
+            widget.onMove!(_position.fen);
+          }
+
           if (_turn == PlayerSide.white) {
             _turn = PlayerSide.black;
           } else {
@@ -224,11 +230,14 @@ class _GameControllerState extends State<GameController> {
         _turn = PlayerSide.white;
         _position = dart_chess.Chess.initial;
       });
+      if (widget.onMove != null) {
+        widget.onMove!(dart_chess.Chess.initial.fen);
+      }
     }
   }
 
   void _goToPrev() {
-    if (_index > 0 && _moves[_index].prev != null) {
+    if (_index > 0 && _moves.isNotEmpty && _moves[_index].prev != null) {
       var prevIndex = _moves[_index].prev!;
       setState(() {
         _index = prevIndex;
@@ -239,11 +248,16 @@ class _GameControllerState extends State<GameController> {
           dart_chess.Setup.parseFen(_moves[prevIndex].fen),
         );
       });
+      if (widget.onMove != null) {
+        widget.onMove!(_moves[prevIndex].fen);
+      }
     }
   }
 
   void _goToNext() {
-    if (_index < _moves.length - 1 && _moves[_index].next != null) {
+    if (_index < _moves.length - 1 &&
+        _moves.isNotEmpty &&
+        _moves[_index].next != null) {
       var nextIndex = _moves[_index].next!;
       setState(() {
         _index = nextIndex;
@@ -254,11 +268,14 @@ class _GameControllerState extends State<GameController> {
           dart_chess.Setup.parseFen(_moves[nextIndex].fen),
         );
       });
+      if (widget.onMove != null) {
+        widget.onMove!(_moves[nextIndex].fen);
+      }
     }
   }
 
   void _goToLast() {
-    if (_index < _moves.length - 1) {
+    if (_index < _moves.length - 1 && _moves.isNotEmpty) {
       int lastIndex = _index;
       while (_moves[lastIndex].next != null) {
         lastIndex = _moves[lastIndex].next!;
@@ -272,6 +289,9 @@ class _GameControllerState extends State<GameController> {
           dart_chess.Setup.parseFen(_moves[lastIndex].fen),
         );
       });
+      if (widget.onMove != null) {
+        widget.onMove!(_moves[lastIndex].fen);
+      }
     }
   }
 
@@ -298,18 +318,18 @@ class _GameControllerState extends State<GameController> {
   String _generatePGN() {
     StringBuffer pgn = StringBuffer();
 
-    pgn.writeln('[Event "${widget.game?.event}"]');
-    pgn.writeln('[Site "${widget.game?.site}"]');
+    pgn.writeln('[Event "${widget.game.event}"]');
+    pgn.writeln('[Site "${widget.game.site}"]');
     pgn.writeln(
-      '[Date "${widget.game?.year}-${widget.game?.month?.toString().padLeft(2, '0')}-${widget.game?.day?.toString().padLeft(2, '0')}"]',
+      '[Date "${widget.game.year}-${widget.game.month?.toString().padLeft(2, '0')}-${widget.game.day?.toString().padLeft(2, '0')}"]',
     );
-    pgn.writeln('[Round "${widget.game?.round}"]');
-    pgn.writeln('[White "${widget.game?.white}"]');
-    pgn.writeln('[Black "${widget.game?.black}"]');
-    pgn.writeln('[Result "${widget.game?.result}"]');
-    pgn.writeln('[WhiteElo "${widget.game?.whiteElo}"]');
-    pgn.writeln('[BlackElo "${widget.game?.blackElo}"]');
-    pgn.writeln('[ECO "${widget.game?.eco}"]');
+    pgn.writeln('[Round "${widget.game.round}"]');
+    pgn.writeln('[White "${widget.game.white}"]');
+    pgn.writeln('[Black "${widget.game.black}"]');
+    pgn.writeln('[Result "${widget.game.result}"]');
+    pgn.writeln('[WhiteElo "${widget.game.whiteElo}"]');
+    pgn.writeln('[BlackElo "${widget.game.blackElo}"]');
+    pgn.writeln('[ECO "${widget.game.eco}"]');
     pgn.writeln();
 
     int counter = 1;
@@ -326,7 +346,7 @@ class _GameControllerState extends State<GameController> {
       pgn.write("${move.san} ");
     }
 
-    pgn.write(widget.game?.result ?? '*');
+    pgn.write(widget.game.result ?? '*');
 
     return pgn.toString();
   }
@@ -400,7 +420,7 @@ class _GameControllerState extends State<GameController> {
 
     notationSpans.add(
       TextSpan(
-        text: "\n${widget.game?.result ?? "*"}",
+        text: "\n${widget.game.result ?? "*"}",
         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
       ),
     );

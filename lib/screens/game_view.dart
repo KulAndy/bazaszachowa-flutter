@@ -150,7 +150,7 @@ class _GameViewState extends State<GameView> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      GameController(game: _game),
+                      GameController(game: _game!),
                     ],
                   ),
                 ),

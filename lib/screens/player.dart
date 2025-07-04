@@ -40,6 +40,9 @@ class _PlayerState extends State<Player> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.playerName != widget.playerName) {
       refresh();
+    } else if (oldWidget.color != widget.color ||
+        oldWidget.opening != widget.opening) {
+      _fetchGames();
     }
   }
 

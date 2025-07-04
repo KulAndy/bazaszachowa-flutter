@@ -2,6 +2,7 @@ import 'package:bazaszachowa_flutter/screens/home.dart';
 import 'package:bazaszachowa_flutter/screens/license.dart';
 import 'package:bazaszachowa_flutter/screens/players.dart';
 import 'package:bazaszachowa_flutter/screens/games.dart';
+import 'package:bazaszachowa_flutter/screens/search_preparation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -66,6 +67,19 @@ class Menu extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: FaIcon(FontAwesomeIcons.brain),
+            title: const Text("Przygotowanie"),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      SearchPreparation(title: "Przygotowanie"),
+                ),
+              );
+            },
+          ),
+
           ListTile(
             leading: Icon(Icons.policy),
             title: const Text("Licencja"),
