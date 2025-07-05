@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:bazaszachowa_flutter/types/game.dart";
 import "package:bazaszachowa_flutter/types/move.dart";
 import "package:chess/chess.dart" as chess_lib;
@@ -17,10 +19,7 @@ class Stats {
   int count;
   double points;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    "count": count,
-    "points": points,
-  };
+  Map<String, dynamic> toJson() => {"count": count, "points": points};
 }
 
 class MoveData {
@@ -41,15 +40,12 @@ class MoveData {
   final String to;
   final String? promotion;
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toJson() => {
     "games": games,
     "points": points,
     "years": years,
     "stats": stats.map(
-      (int key, Stats value) => MapEntry<String, Map<String, dynamic>>(
-        key.toString(),
-        value.toJson(),
-      ),
+      (key, value) => MapEntry(key.toString(), value.toJson()),
     ),
     "from": from,
     "to": to,
@@ -58,22 +54,19 @@ class MoveData {
 }
 
 class FenData {
-  Map<String, MoveData> moves = <String, MoveData>{};
-  List<int> indexes = <int>[];
+  Map<String, MoveData> moves = {};
+  List<int> indexes = [];
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-    ...moves.map(
-      (String key, MoveData value) =>
-          MapEntry<String, Map<String, dynamic>>(key, value.toJson()),
-    ),
+  Map<String, dynamic> toJson() => {
+    ...moves.map((key, value) => MapEntry(key, value.toJson())),
     "indexes": indexes,
   };
 }
 
 class ChessProcessor {
   String currentFEN = "";
-  Map<String, FenData> fensObj = <String, FenData>{};
-  List<Game> games = <Game>[];
+  Map<String, FenData> fensObj = {};
+  List<Game> games = [];
   bool isCompleted = false;
 
   Future<Map<String, FenData>> getTree(List<Game> rows) async {
@@ -85,22 +78,22 @@ class ChessProcessor {
     final List<Map<String, FenData>> fensArray = await Future.wait(
       fensPromises,
     );
-    return mergeFensArray(fensArray);
+    return fensObj = mergeFensArray(fensArray);
   }
 
   Map<String, FenData> mergeFensArray(List<Map<String, FenData>> fensArray) {
-    final Map<String, FenData> mergedFensObj = <String, FenData>{};
+    final Map<String, FenData> mergedFensObj = {};
     for (final Map<String, FenData> fens in fensArray) {
-      fens.forEach((String fen, FenData data) {
+      fens.forEach((fen, data) {
         if (mergedFensObj.containsKey(fen)) {
           mergedFensObj[fen]!.indexes.addAll(data.indexes);
-          data.moves.forEach((String move, MoveData moveData) {
+          data.moves.forEach((move, moveData) {
             if (mergedFensObj[fen]!.moves.containsKey(move)) {
               final MoveData existingMoveData = mergedFensObj[fen]!.moves[move]!
                 ..games += moveData.games
                 ..points += moveData.points;
               existingMoveData.years.addAll(moveData.years);
-              moveData.stats.forEach((int year, Stats stat) {
+              moveData.stats.forEach((year, stat) {
                 if (existingMoveData.stats.containsKey(year)) {
                   existingMoveData.stats[year]!.count += stat.count;
                   existingMoveData.stats[year]!.points += stat.points;
@@ -124,16 +117,16 @@ class ChessProcessor {
 
   Future<Map<String, FenData>> getFENsFirstBatch(Game row) async {
     final List<Move> moves = row.moves;
-    final double points = row.result == "1-0"
+    final points = row.result == "1-0"
         ? 1.0
         : row.result == "0-1"
         ? 0.0
         : 0.5;
-    final chess_lib.Chess chess = chess_lib.Chess();
-    final Map<String, FenData> fens = <String, FenData>{};
+    final chess = chess_lib.Chess();
+    final Map<String, FenData> fens = {};
     int i = 0;
 
-    for (final Move move in moves) {
+    for (final move in moves) {
       final Map<String, dynamic> result = await processMove(
         chess,
         move,
@@ -162,7 +155,7 @@ class ChessProcessor {
               games: 1,
               points: result["data"]["points"],
               years: result["data"]["years"],
-              stats: <int, Stats>{
+              stats: {
                 row.year: Stats()
                   ..count = 1
                   ..points = result["data"]["points"],
@@ -178,13 +171,13 @@ class ChessProcessor {
               games: 1,
               points: result["data"]["points"],
               years: result["data"]["years"],
-              stats: <int, Stats>{
+              stats: {
                 row.year: Stats()
                   ..count = 1
                   ..points = result["data"]["points"],
               },
             )
-            ..indexes = <int>[row.id];
+            ..indexes = [row.id];
         }
       }
       if (i++ >= firstBatchLimit || result["doneMove"] == null) {
@@ -203,7 +196,7 @@ class ChessProcessor {
     final String rawFen = chess.fen;
     final String fen = cutStringToSecondSpace(rawFen);
 
-    if (!chess.move(<String, String?>{
+    if (!chess.move({
       "from": move.from,
       "to": move.to,
       "promotion": move.promotion,
@@ -211,21 +204,19 @@ class ChessProcessor {
       throw Exception("Cannot make move ${move.from} ${move.to} in $fen");
     }
 
-    final List<dynamic> history = chess.getHistory(<dynamic, dynamic>{
-      "verbose": true,
-    });
+    final List history = chess.getHistory({"verbose": true});
 
     if (history.isEmpty) {
       throw Exception("No history after move ${move.from} ${move.to} in $fen");
     }
 
     final Map<String, dynamic> moveObj = history.last;
-    return <String, dynamic>{
+    return {
       "fen": fen,
-      "data": <String, Object>{
+      "data": {
         "games": 1,
         "points": points,
-        "years": <int>[year],
+        "years": [year],
         "stats": <int, Stats>{},
       },
       "doneMove": moveObj,
@@ -240,27 +231,19 @@ class ChessProcessor {
     localFen = cutStringToSecondSpace(localFen);
 
     if (fensObj.containsKey(localFen)) {
-      final FenData fens = FenData()
-        ..moves = Map<String, MoveData>.from(fensObj[localFen]!.moves)
-        ..indexes = List<int>.from(fensObj[localFen]!.indexes);
+      final fens = FenData()
+        ..moves = Map.from(fensObj[localFen]!.moves)
+        ..indexes = List.from(fensObj[localFen]!.indexes);
       final List<Map<String, dynamic>> moves =
           fens.moves.entries
-              .map(
-                (MapEntry<String, MoveData> entry) => <String, dynamic>{
-                  "move": entry.key,
-                  ...entry.value.toJson(),
-                },
-              )
+              .map((entry) => {"move": entry.key, ...entry.value.toJson()})
               .toList()
-            ..sort(
-              (Map<String, dynamic> a, Map<String, dynamic> b) =>
-                  (b["games"] as int).compareTo(a["games"] as int),
-            );
-      final FenData sortedFenData = FenData()
+            ..sort((a, b) => (b["games"] as int).compareTo(a["games"] as int));
+      final sortedFenData = FenData()
         ..indexes = fens.indexes
         ..moves = Map.fromEntries(
           moves.map(
-            (Map<String, dynamic> e) => MapEntry(
+            (e) => MapEntry(
               e["move"] as String,
               MoveData(
                 from: e["from"],
@@ -271,7 +254,7 @@ class ChessProcessor {
                 years: List<int>.from(e["years"] as List),
                 stats: Map<int, Stats>.from(
                   (e["stats"] as Map).map(
-                    (key, value) => MapEntry<dynamic, dynamic>(
+                    (key, value) => MapEntry(
                       int.parse(key),
                       Stats()
                         ..count = (value["count"] as num).toInt()
@@ -291,16 +274,16 @@ class ChessProcessor {
 
   Future<Map<String, FenData>> getFENsSecondBatch(Game row) async {
     final List<Move> moves = row.moves;
-    final double points = row.result == "1-0"
+    final points = row.result == "1-0"
         ? 1.0
         : row.result == "0-1"
         ? 0.0
         : 0.5;
-    final chess_lib.Chess chess = chess_lib.Chess();
-    final Map<String, FenData> fens = <String, FenData>{};
+    final chess = chess_lib.Chess();
+    final Map<String, FenData> fens = {};
     int i = 0;
 
-    for (final Move move in moves) {
+    for (final move in moves) {
       final Map<String, dynamic> result = await processMove(
         chess,
         move,
@@ -327,8 +310,8 @@ class ChessProcessor {
               promotion: result["doneMove"]!["promotion"],
               games: 1,
               points: result["data"]["points"],
-              years: <int>[result["data"]["years"][0]],
-              stats: <int, Stats>{},
+              years: [result["data"]["years"][0]],
+              stats: {},
             );
           }
         } else {
@@ -339,10 +322,10 @@ class ChessProcessor {
               promotion: result["doneMove"]!["promotion"],
               games: 1,
               points: result["data"]["points"],
-              years: <int>[result["data"]["years"][0]],
-              stats: <int, Stats>{},
+              years: [result["data"]["years"][0]],
+              stats: {},
             )
-            ..indexes = <int>[row.id];
+            ..indexes = [row.id];
         }
       }
       if (result["doneMove"] == null) {
@@ -353,7 +336,7 @@ class ChessProcessor {
   }
 
   Future<void> completeTree() async {
-    const int batchSize = 5;
+    const batchSize = 5;
     int index = 0;
     Future<void> processBatch() async {
       for (int i = 0; i < batchSize && index < games.length; i++) {
@@ -362,12 +345,12 @@ class ChessProcessor {
         index++;
       }
       if (index < games.length) {
-        Future<void>.delayed(Duration.zero, processBatch);
+        Future.delayed(Duration.zero, processBatch);
       } else {
         isCompleted = true;
       }
     }
 
-    await processBatch();
+    unawaited(processBatch());
   }
 }
