@@ -1,3 +1,4 @@
+import 'package:bazaszachowa_flutter/components/app/app_text_span.dart';
 import 'package:bazaszachowa_flutter/components/app/menu.dart';
 import 'package:bazaszachowa_flutter/components/app/separator.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class _LicenseState extends State<License> {
               ),
               const SizedBox(height: 12),
               RichText(
-                text: TextSpan(
+                text: AppTextSpan(
                   children: [
                     const TextSpan(
                       text: '* kod źródłowy dostępny na githubie – ',
@@ -65,11 +66,12 @@ class _LicenseState extends State<License> {
                       href: 'https://github.com/KulAndy/bazaszachowa-api',
                     ),
                   ],
+                  context: context,
                 ),
               ),
               const Separator(),
               RichText(
-                text: TextSpan(
+                text: AppTextSpan(
                   children: [
                     const TextSpan(
                       text:
@@ -81,6 +83,7 @@ class _LicenseState extends State<License> {
                       href: 'https://www.gnu.org/licenses/agpl-3.0.html',
                     ),
                   ],
+                  context: context,
                 ),
               ),
               const Separator(),

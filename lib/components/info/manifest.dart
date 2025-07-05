@@ -1,3 +1,4 @@
+import 'package:bazaszachowa_flutter/components/app/app_text_span.dart';
 import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:bazaszachowa_flutter/components/app/separator.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class Manifest extends StatelessWidget {
           'chcą zyskać przewagę poprzez usunięcie ich z bazy powinny zapoznać się z takimi pojęciami jak ',
         ),
         RichText(
-          text: TextSpan(
+          text: AppTextSpan(
             children: <TextSpan>[
               Link(
                 text: 'honor',
@@ -52,12 +53,12 @@ class Manifest extends StatelessWidget {
               ),
               const TextSpan(text: '.'),
             ],
+            context: context,
           ),
         ),
         const Separator(height: 10),
         RichText(
-          text: TextSpan(
-            style: const TextStyle(color: Colors.white),
+          text: AppTextSpan(
             children: <TextSpan>[
               const TextSpan(
                 text:
@@ -73,6 +74,7 @@ class Manifest extends StatelessWidget {
               ),
               const TextSpan(text: ' 🍺.'),
             ],
+            context: context,
           ),
         ),
       ],

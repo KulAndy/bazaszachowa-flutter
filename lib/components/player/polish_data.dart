@@ -1,3 +1,4 @@
+import 'package:bazaszachowa_flutter/components/app/app_text_span.dart';
 import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:bazaszachowa_flutter/types/poland_player.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class PolishData extends StatelessWidget {
           const CircularProgressIndicator()
         else
           RichText(
-            text: TextSpan(
+            text: AppTextSpan(
               children: <TextSpan>[
                 Link(
                   text: 'CR',
@@ -22,6 +23,7 @@ class PolishData extends StatelessWidget {
                   href: 'https://www.cr-pzszach.pl/',
                 ),
               ],
+              context: context,
             ),
           ),
         if (polandPlayers != null)

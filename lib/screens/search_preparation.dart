@@ -112,10 +112,6 @@ class _SearchPreparationState extends State<SearchPreparation> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF05445E),
-                    foregroundColor: Colors.white,
-                  ),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(

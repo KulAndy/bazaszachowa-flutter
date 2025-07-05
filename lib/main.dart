@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'app_color_scheme.dart';
 import 'screens/home.dart';
 
 void main() {
@@ -8,6 +9,7 @@ void main() {
 }
 
 class App extends StatelessWidget {
+  final ThemeMode themeMode = ThemeMode.system;
   const App({super.key});
 
   static Future<void> launchURL(BuildContext context, String url) async {
@@ -33,22 +35,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Baza szachowa',
-      theme: ThemeData(
-        colorScheme: ColorScheme.light(
-          primary: const Color(0xFF189AB4),
-          primaryContainer: const Color(0xFF75E6DA),
-          secondary: const Color(0xFF05445E),
-          secondaryContainer: const Color(0xFFD4F1F4),
-          surface: const Color(0xFF033C47),
-          error: Colors.red,
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
-          onSurface: Colors.white,
-          brightness: Brightness.light,
-        ),
-        appBarTheme: const AppBarTheme(color: Color(0xFF05445E)),
-        useMaterial3: true,
-      ),
+      theme: AppColorScheme.lightTheme,
+      darkTheme: AppColorScheme.darkTheme,
+      themeMode: themeMode,
       home: const Home(title: 'Baza szachowa'),
       debugShowCheckedModeBanner: false,
     );

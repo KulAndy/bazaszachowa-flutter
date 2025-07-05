@@ -291,16 +291,15 @@ class _GamesState extends State<Games> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF05445E),
-                    foregroundColor: Colors.white,
-                  ),
                   onPressed: _fetchGames,
                   child: const Text('Szukaj'),
                 ),
                 const SizedBox(height: 20),
                 if (_games != null) ...[
-                  Text("Znaleziono ${_games!.length}"),
+                  Text(
+                    "Znaleziono ${_games!.length}",
+                    textAlign: TextAlign.center,
+                  ),
                   GameTable(games: _games!, base: 'all'),
                 ],
               ],

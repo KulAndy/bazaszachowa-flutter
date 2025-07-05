@@ -1,9 +1,10 @@
 import 'package:bazaszachowa_flutter/api_config.dart';
+import 'package:bazaszachowa_flutter/app_color_scheme.dart';
 import 'package:bazaszachowa_flutter/chess_processor.dart';
 import 'package:bazaszachowa_flutter/components/chessboard/game_controller.dart';
 import 'package:bazaszachowa_flutter/components/player/game_table.dart';
 import 'package:bazaszachowa_flutter/types/game.dart';
-import 'package:chess/chess.dart' hide State;
+import 'package:chess/chess.dart' as chess;
 import 'package:flutter/material.dart';
 
 class Preparation extends StatefulWidget {
@@ -26,7 +27,7 @@ class _PreparationState extends State<Preparation> {
   List<Game>? _games;
   final ChessProcessor _processor = ChessProcessor();
   Game _game = Game(id: 0, year: 0, moves: [], white: "N, N", black: "N, N");
-  String? _fen = Chess.DEFAULT_POSITION;
+  String? _fen = chess.Chess.DEFAULT_POSITION;
   List<TableRow> _moves = [];
   List<int> _indexes = [];
   final GlobalKey<GameControllerState> _gameControllerKey = GlobalKey();
@@ -55,12 +56,30 @@ class _PreparationState extends State<Preparation> {
   }
 
   void _updateMoves() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    int index = 0;
     if (_fen != null) {
       var result = _processor.searchFEN(_fen!);
       _indexes = result.indexes;
       _moves = result.moves.entries.map((entry) {
         final moveData = entry.value;
+        Color backgroundColor;
+        if (isDark) {
+          if (index % 2 == 0) {
+            backgroundColor = AppColors.darkEvenRow;
+          } else {
+            backgroundColor = AppColors.darkOddRow;
+          }
+        } else {
+          if (index % 2 == 0) {
+            backgroundColor = AppColors.lightEvenRow;
+          } else {
+            backgroundColor = AppColors.lightOddRow;
+          }
+        }
+        index++;
         return TableRow(
+          decoration: BoxDecoration(color: backgroundColor),
           children: [
             TableCell(
               child: GestureDetector(
@@ -116,9 +135,7 @@ class _PreparationState extends State<Preparation> {
                 border: TableBorder.all(),
                 children: [
                   TableRow(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withAlpha(26),
-                    ),
+                    decoration: BoxDecoration(color: AppColors.middleGray),
                     children: [
                       TableCell(child: Text("Ruch")),
                       TableCell(child: Text("Ostatnio")),

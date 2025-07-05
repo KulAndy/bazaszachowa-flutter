@@ -1,3 +1,4 @@
+import 'package:bazaszachowa_flutter/app_color_scheme.dart';
 import 'package:bazaszachowa_flutter/screens/player.dart';
 import 'package:bazaszachowa_flutter/types/opening_stats.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,13 @@ class ColorStatsData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     int sum = 0;
     double percentageSum = 0;
 
     return ExpansionTile(
       title: Text(header),
+      collapsedBackgroundColor: AppColors.middleGray,
       children: <Widget>[
         GestureDetector(
           onTap: () => Navigator.pushReplacement(
@@ -55,6 +58,7 @@ class ColorStatsData extends StatelessWidget {
             },
             children: [
               TableRow(
+                decoration: BoxDecoration(color: AppColors.middleGray),
                 children: ["Debiut", "Ilość", "%"]
                     .map(
                       (text) => TableCell(
@@ -66,10 +70,27 @@ class ColorStatsData extends StatelessWidget {
                     )
                     .toList(),
               ),
-              ...colorStats.map((item) {
+              ...colorStats.asMap().entries.map((entry) {
+                var item = entry.value;
+                int index = entry.key;
                 sum += item.count;
                 percentageSum += item.percentage * item.count;
+                Color backgroundColor;
+                if (isDark) {
+                  if (index % 2 == 0) {
+                    backgroundColor = AppColors.darkEvenRow;
+                  } else {
+                    backgroundColor = AppColors.darkOddRow;
+                  }
+                } else {
+                  if (index % 2 == 0) {
+                    backgroundColor = AppColors.lightEvenRow;
+                  } else {
+                    backgroundColor = AppColors.lightOddRow;
+                  }
+                }
                 return TableRow(
+                  decoration: BoxDecoration(color: backgroundColor),
                   children:
                       [
                             item.opening,
@@ -103,6 +124,7 @@ class ColorStatsData extends StatelessWidget {
                 );
               }),
               TableRow(
+                decoration: BoxDecoration(color: AppColors.middleGray),
                 children:
                     [
                           "Podsumowanie",

@@ -1,4 +1,5 @@
 import 'package:bazaszachowa_flutter/api_config.dart';
+import 'package:bazaszachowa_flutter/components/app/app_text_span.dart';
 import 'package:bazaszachowa_flutter/components/app/link.dart';
 import 'package:bazaszachowa_flutter/components/player/color_stats_data.dart';
 import 'package:bazaszachowa_flutter/components/player/fide_data.dart';
@@ -164,7 +165,7 @@ class _PlayerState extends State<Player> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     RichText(
-                      text: TextSpan(
+                      text: AppTextSpan(
                         children: <TextSpan>[
                           Link(
                             text: 'FIDE',
@@ -172,6 +173,7 @@ class _PlayerState extends State<Player> {
                             href: 'https://www.fide.com/',
                           ),
                         ],
+                        context: context,
                       ),
                     ),
                     FideData(fidePlayers: _fidePlayers),
@@ -218,7 +220,10 @@ class _PlayerState extends State<Player> {
               if (_games == null)
                 const Center(child: CircularProgressIndicator())
               else ...[
-                Text("Znaleziono ${_games!.length}"),
+                Text(
+                  "Znaleziono ${_games!.length}",
+                  textAlign: TextAlign.center,
+                ),
                 GameTable(games: _games!, base: 'all'),
               ],
             ],

@@ -1,3 +1,4 @@
+import 'package:bazaszachowa_flutter/app_color_scheme.dart';
 import 'package:bazaszachowa_flutter/screens/game_view.dart';
 import 'package:bazaszachowa_flutter/types/game.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class GameTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -39,9 +41,7 @@ class GameTable extends StatelessWidget {
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 TableRow(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withAlpha(26),
-                  ),
+                  decoration: BoxDecoration(color: AppColors.middleGray),
                   children: [
                     _buildTableHeader('Biały'),
                     _buildTableHeader('Wynik'),
@@ -53,7 +53,23 @@ class GameTable extends StatelessWidget {
                 ...games.asMap().entries.map((entry) {
                   final index = entry.key;
                   final game = entry.value;
+
+                  Color backgroundColor;
+                  if (isDark) {
+                    if (index % 2 == 0) {
+                      backgroundColor = AppColors.darkEvenRow;
+                    } else {
+                      backgroundColor = AppColors.darkOddRow;
+                    }
+                  } else {
+                    if (index % 2 == 0) {
+                      backgroundColor = AppColors.lightEvenRow;
+                    } else {
+                      backgroundColor = AppColors.lightOddRow;
+                    }
+                  }
                   return TableRow(
+                    decoration: BoxDecoration(color: backgroundColor),
                     children: [
                       _buildTableCell(context, game.white, index),
                       _buildTableCenterCell(context, game.result ?? '*', index),
