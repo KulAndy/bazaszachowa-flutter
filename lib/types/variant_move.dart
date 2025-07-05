@@ -1,14 +1,4 @@
 class VariantMove {
-  List<int> variations;
-  String from;
-  String to;
-  String turn;
-  String fen;
-  int index;
-  String san;
-  int? prev;
-  String? promotion;
-  int? next;
 
   VariantMove({
     required this.variations,
@@ -22,4 +12,14 @@ class VariantMove {
     this.promotion,
     this.next,
   });
+  List<int> variations;
+  String from;
+  String to;
+  String turn;
+  String fen;
+  int index;
+  String san;
+  int? prev;
+  String? promotion;
+  int? next;
 }

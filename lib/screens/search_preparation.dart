@@ -1,12 +1,13 @@
-import 'dart:async';
-import 'package:bazaszachowa_flutter/api_config.dart';
-import 'package:bazaszachowa_flutter/components/app/search_with_hints.dart';
-import 'package:bazaszachowa_flutter/screens/preparation.dart';
-import 'package:flutter/material.dart';
-import 'package:bazaszachowa_flutter/components/app/menu.dart';
+import "dart:async";
+
+import "package:bazaszachowa_flutter/api_config.dart";
+import "package:bazaszachowa_flutter/components/app/menu.dart";
+import "package:bazaszachowa_flutter/components/app/search_with_hints.dart";
+import "package:bazaszachowa_flutter/screens/preparation.dart";
+import "package:flutter/material.dart";
 
 class SearchPreparation extends StatefulWidget {
-  const SearchPreparation({super.key, required this.title});
+  const SearchPreparation({required this.title, super.key});
 
   final String title;
 
@@ -16,9 +17,9 @@ class SearchPreparation extends StatefulWidget {
 
 class _SearchPreparationState extends State<SearchPreparation> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> _searchResults = [];
+  List<String> _searchResults = <String>[];
   Timer? _debounceTimer;
-  String _color = 'white';
+  String _color = "white";
   String _playerName = "";
 
   @override
@@ -29,8 +30,9 @@ class _SearchPreparationState extends State<SearchPreparation> {
 
   @override
   void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
+    _searchController
+      ..removeListener(_onSearchChanged)
+      ..dispose();
     _debounceTimer?.cancel();
     super.dispose();
   }
@@ -44,94 +46,94 @@ class _SearchPreparationState extends State<SearchPreparation> {
   }
 
   Future<void> _searchPlayers(String query) async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    String trimmedQuery = query.trim();
+    final ScaffoldMessengerState scaffoldMessenger = ScaffoldMessenger.of(
+      context,
+    );
+    final String trimmedQuery = query.trim();
     setState(() {
       _playerName = trimmedQuery;
     });
     if (trimmedQuery.isEmpty) {
-      setState(() => _searchResults = []);
+      setState(() => _searchResults = <String>[]);
       return;
     }
 
     try {
-      final results = await ApiConfig.searchPlayer(trimmedQuery);
+      final List<String> results = await ApiConfig.searchPlayer(trimmedQuery);
       setState(() => _searchResults = results);
     } catch (e) {
-      setState(() => _searchResults = []);
+      setState(() => _searchResults = <String>[]);
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Error on search: $e')),
+        SnackBar(content: Text("Error on search: $e")),
       );
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: SafeArea(
-        bottom: true,
-        minimum: const EdgeInsets.only(bottom: 12),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                SearchWithHints(
-                  hintText: 'Nazwisko, Imię',
-                  options: _searchResults,
-                  label: "Gracz",
-                  onSelected: (String label) => _searchPlayers(label),
-                  controller: _searchController,
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Text("Kolor:"),
-                    Radio<String>(
-                      value: 'white',
-                      groupValue: _color,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _color = value!;
-                        });
-                      },
-                    ),
-                    const Text("Białe"),
-                    Radio<String>(
-                      value: 'black',
-                      groupValue: _color,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _color = value!;
-                        });
-                      },
-                    ),
-                    const Text("Czarne"),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Preparation(
-                        title:
-                            '${_playerName} ${_color == "white" ? "białe" : "czarne"}',
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(widget.title)),
+    body: SafeArea(
+      minimum: const EdgeInsets.only(bottom: 12),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: <Widget>[
+              SearchWithHints(
+                hintText: "Nazwisko, Imię",
+                options: _searchResults,
+                label: "Gracz",
+                onSelected: _searchPlayers,
+                controller: _searchController,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: <Widget>[
+                  const Text("Kolor:"),
+                  Radio<String>(
+                    value: "white",
+                    groupValue: _color,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _color = value!;
+                      });
+                    },
+                  ),
+                  const Text("Białe"),
+                  Radio<String>(
+                    value: "black",
+                    groupValue: _color,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _color = value!;
+                      });
+                    },
+                  ),
+                  const Text("Czarne"),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Preparation(
+                      title:
+                          // ignore: lines_longer_than_80_chars
+                          '$_playerName ${_color == "white" ? "białe" : "czarne"}',
 
-                        playerName: _playerName,
-                        color: _color,
-                      ),
+                      playerName: _playerName,
+                      color: _color,
                     ),
                   ),
-                  child: const Text('Szukaj'),
                 ),
-              ],
-            ),
+                child: const Text("Szukaj"),
+              ),
+            ],
           ),
         ),
       ),
-      drawer: const Menu(),
-    );
-  }
+    ),
+    drawer: const Menu(),
+  );
 }

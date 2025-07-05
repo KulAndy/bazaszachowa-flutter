@@ -1,23 +1,22 @@
-import 'package:bazaszachowa_flutter/api_config.dart';
-import 'package:bazaszachowa_flutter/components/app/app_text_span.dart';
-import 'package:bazaszachowa_flutter/components/app/link.dart';
-import 'package:bazaszachowa_flutter/components/player/color_stats_data.dart';
-import 'package:bazaszachowa_flutter/components/player/fide_data.dart';
-import 'package:bazaszachowa_flutter/components/player/game_table.dart';
-import 'package:bazaszachowa_flutter/components/player/polish_data.dart';
-import 'package:bazaszachowa_flutter/types/fide_player.dart';
-import 'package:bazaszachowa_flutter/types/game.dart';
-import 'package:bazaszachowa_flutter/types/opening_stats.dart';
-import 'package:bazaszachowa_flutter/types/player_range_stats.dart';
-import 'package:bazaszachowa_flutter/types/poland_player.dart';
-import 'package:flutter/material.dart';
+import "package:bazaszachowa_flutter/api_config.dart";
+import "package:bazaszachowa_flutter/components/app/app_text_span.dart";
+import "package:bazaszachowa_flutter/components/app/link.dart";
+import "package:bazaszachowa_flutter/components/player/color_stats_data.dart";
+import "package:bazaszachowa_flutter/components/player/fide_data.dart";
+import "package:bazaszachowa_flutter/components/player/game_table.dart";
+import "package:bazaszachowa_flutter/components/player/polish_data.dart";
+import "package:bazaszachowa_flutter/types/fide_player.dart";
+import "package:bazaszachowa_flutter/types/game.dart";
+import "package:bazaszachowa_flutter/types/opening_stats.dart";
+import "package:bazaszachowa_flutter/types/player_range_stats.dart";
+import "package:bazaszachowa_flutter/types/poland_player.dart";
+import "package:flutter/material.dart";
 
 class Player extends StatefulWidget {
+  const Player({required this.playerName, super.key, this.opening, this.color});
   final String playerName;
   final String? color;
   final String? opening;
-
-  const Player({super.key, required this.playerName, this.opening, this.color});
 
   @override
   State<Player> createState() => _PlayerState();
@@ -57,7 +56,9 @@ class _PlayerState extends State<Player> {
 
   Future<void> _fetchPlayerRangeStats() async {
     try {
-      final stats = await ApiConfig.searchMinMaxYearElo(widget.playerName);
+      final PlayerRangeStats stats = await ApiConfig.searchMinMaxYearElo(
+        widget.playerName,
+      );
       setState(() {
         _playerRangeStats = stats;
       });
@@ -68,7 +69,9 @@ class _PlayerState extends State<Player> {
 
   Future<void> _fetchPolandPlayer() async {
     try {
-      final players = await ApiConfig.searchPolandPlayers(widget.playerName);
+      final List<PolandPlayer> players = await ApiConfig.searchPolandPlayers(
+        widget.playerName,
+      );
       setState(() {
         _polandPlayers = players;
       });
@@ -79,7 +82,9 @@ class _PlayerState extends State<Player> {
 
   Future<void> _fetchFidePlayer() async {
     try {
-      final players = await ApiConfig.searchFidePlayers(widget.playerName);
+      final List<FidePlayer> players = await ApiConfig.searchFidePlayers(
+        widget.playerName,
+      );
       setState(() {
         _fidePlayers = players;
       });
@@ -90,7 +95,9 @@ class _PlayerState extends State<Player> {
 
   Future<void> _fetchOpeningStats() async {
     try {
-      final stats = await ApiConfig.searchOpeningStats(widget.playerName);
+      final OpeningStats stats = await ApiConfig.searchOpeningStats(
+        widget.playerName,
+      );
       setState(() {
         _openingStats = stats;
       });
@@ -106,8 +113,7 @@ class _PlayerState extends State<Player> {
         games = (await ApiConfig.searchGames(
           white: widget.playerName,
           ignore: true,
-          base: 'all',
-          searching: 'fulltext',
+          searching: "fulltext",
         )).games;
       } else {
         games = await ApiConfig.searchFilterGames(
@@ -125,124 +131,113 @@ class _PlayerState extends State<Player> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.playerName)),
-      body: SafeArea(
-        bottom: true,
-        minimum: const EdgeInsets.only(bottom: 12),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_playerRangeStats == null)
-                const Center(child: CircularProgressIndicator())
-              else
-                Column(
-                  children: [
-                    if (_playerRangeStats!.maxElo != null)
-                      _buildStatItem(
-                        'Najwyższy osiągnięty ranking',
-                        _playerRangeStats!.maxElo.toString(),
-                      ),
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(widget.playerName)),
+    body: SafeArea(
+      minimum: const EdgeInsets.only(bottom: 12),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            if (_playerRangeStats == null)
+              const Center(child: CircularProgressIndicator())
+            else
+              Column(
+                children: <Widget>[
+                  if (_playerRangeStats!.maxElo != null)
                     _buildStatItem(
-                      'Gry z lat ${_playerRangeStats!.minYear} - ${_playerRangeStats!.maxYear}',
+                      "Najwyższy osiągnięty ranking",
+                      _playerRangeStats!.maxElo.toString(),
                     ),
-                  ],
-                ),
+                  _buildStatItem(
+                    // ignore: lines_longer_than_80_chars
+                    "Gry z lat ${_playerRangeStats!.minYear} - ${_playerRangeStats!.maxYear}",
+                  ),
+                ],
+              ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              PolishData(polandPlayers: _polandPlayers),
+            PolishData(polandPlayers: _polandPlayers),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              if (_fidePlayers == null)
-                const Center(child: CircularProgressIndicator())
-              else
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    RichText(
-                      text: AppTextSpan(
-                        children: <TextSpan>[
-                          Link(
-                            text: 'FIDE',
-                            context: context,
-                            href: 'https://www.fide.com/',
-                          ),
-                        ],
-                        context: context,
-                      ),
-                    ),
-                    FideData(fidePlayers: _fidePlayers),
-                  ],
-                ),
-
-              const SizedBox(height: 20),
-
-              if (_openingStats == null)
-                const Center(child: CircularProgressIndicator())
-              else
-                Column(
-                  children: [
-                    ColorStatsData(
-                      colorStats: _openingStats!.white,
-                      header: "Białe",
-                      colorPrefix: 'white',
-                      playerName: widget.playerName,
-                    ),
-                    ColorStatsData(
-                      colorStats: _openingStats!.black,
-                      header: "Czarne",
-                      colorPrefix: 'black',
-                      playerName: widget.playerName,
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Player(
-                            playerName: widget.playerName,
-                            color: null,
-                            opening: null,
-                          ),
+            if (_fidePlayers == null)
+              const Center(child: CircularProgressIndicator())
+            else
+              Column(
+                children: <Widget>[
+                  RichText(
+                    text: AppTextSpan(
+                      children: <TextSpan>[
+                        Link(
+                          text: "FIDE",
+                          context: context,
+                          href: "https://www.fide.com/",
                         ),
-                      ),
-                      child: const Text('Reset'),
+                      ],
+                      context: context,
                     ),
-                  ],
-                ),
+                  ),
+                  FideData(fidePlayers: _fidePlayers),
+                ],
+              ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              if (_games == null)
-                const Center(child: CircularProgressIndicator())
-              else ...[
-                Text(
-                  "Znaleziono ${_games!.length}",
-                  textAlign: TextAlign.center,
-                ),
-                GameTable(games: _games!, base: 'all'),
-              ],
+            if (_openingStats == null)
+              const Center(child: CircularProgressIndicator())
+            else
+              Column(
+                children: <Widget>[
+                  ColorStatsData(
+                    colorStats: _openingStats!.white,
+                    header: "Białe",
+                    colorPrefix: "white",
+                    playerName: widget.playerName,
+                  ),
+                  ColorStatsData(
+                    colorStats: _openingStats!.black,
+                    header: "Czarne",
+                    colorPrefix: "black",
+                    playerName: widget.playerName,
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            Player(playerName: widget.playerName),
+                      ),
+                    ),
+                    child: const Text("Reset"),
+                  ),
+                ],
+              ),
+
+            const SizedBox(height: 20),
+
+            if (_games == null)
+              const Center(child: CircularProgressIndicator())
+            else ...<Widget>[
+              Text("Znaleziono ${_games!.length}", textAlign: TextAlign.center),
+              GameTable(games: _games!, base: "all"),
             ],
-          ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _buildStatItem(String label, [String? value]) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
-          if (value != null) Text(value),
-        ],
-      ),
-    );
-  }
+  Widget _buildStatItem(String label, [String? value]) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("$label: ", style: const TextStyle(fontWeight: FontWeight.bold)),
+        if (value != null) Text(value),
+      ],
+    ),
+  );
 }

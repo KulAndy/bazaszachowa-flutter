@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class AppTextSpan extends TextSpan {
   AppTextSpan({
@@ -15,7 +15,6 @@ class AppTextSpan extends TextSpan {
              TextStyle(color: color ?? _defaultColor(context)),
        );
 
-  static Color _defaultColor(BuildContext context) {
-    return Theme.of(context).colorScheme.onSurface;
-  }
+  static Color _defaultColor(BuildContext context) =>
+      Theme.of(context).colorScheme.onSurface;
 }

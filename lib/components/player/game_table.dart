@@ -1,19 +1,19 @@
-import 'package:bazaszachowa_flutter/app_color_scheme.dart';
-import 'package:bazaszachowa_flutter/screens/game_view.dart';
-import 'package:bazaszachowa_flutter/types/game.dart';
-import 'package:flutter/material.dart';
+import "package:bazaszachowa_flutter/app_color_scheme.dart";
+import "package:bazaszachowa_flutter/screens/game_view.dart";
+import "package:bazaszachowa_flutter/types/game.dart";
+import "package:flutter/material.dart";
 
 class GameTable extends StatelessWidget {
+  const GameTable({required this.games, required this.base, super.key});
   final List<Game> games;
   final String base;
-  const GameTable({super.key, required this.games, required this.base});
 
   void _navigateToGame(BuildContext context, int index, String base) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => GameView(
-          games: games.map((item) => item.id).toList(),
+        builder: (BuildContext context) => GameView(
+          games: games.map((Game item) => item.id).toList(),
           index: index,
           base: base,
         ),
@@ -23,98 +23,100 @@ class GameTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minWidth: constraints.maxWidth),
-            child: Table(
-              border: TableBorder.all(),
-              columnWidths: const {
-                0: FlexColumnWidth(4),
-                1: FlexColumnWidth(2),
-                2: FlexColumnWidth(4),
-                3: FlexColumnWidth(3),
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(color: AppColors.middleGray),
-                  children: [
-                    _buildTableHeader('Biały'),
-                    _buildTableHeader('Wynik'),
-                    _buildTableHeader('Czarny'),
-                    _buildTableHeader('Data'),
-                  ],
-                ),
-
-                ...games.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final game = entry.value;
-
-                  Color backgroundColor;
-                  if (isDark) {
-                    if (index % 2 == 0) {
-                      backgroundColor = AppColors.darkEvenRow;
-                    } else {
-                      backgroundColor = AppColors.darkOddRow;
-                    }
-                  } else {
-                    if (index % 2 == 0) {
-                      backgroundColor = AppColors.lightEvenRow;
-                    } else {
-                      backgroundColor = AppColors.lightOddRow;
-                    }
-                  }
-                  return TableRow(
-                    decoration: BoxDecoration(color: backgroundColor),
-                    children: [
-                      _buildTableCell(context, game.white, index),
-                      _buildTableCenterCell(context, game.result ?? '*', index),
-                      _buildTableCell(context, game.black, index),
-                      _buildTableCell(
-                        context,
-                        '${game.year}.${game.month?.toString().padLeft(2, '0') ?? '??'}.${game.day?.toString().padLeft(2, '0') ?? '??'}',
-                        index,
-                      ),
+      builder: (BuildContext context, BoxConstraints constraints) =>
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+              child: Table(
+                border: TableBorder.all(),
+                columnWidths: const <int, TableColumnWidth>{
+                  0: FlexColumnWidth(4),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(4),
+                  3: FlexColumnWidth(3),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+                  TableRow(
+                    decoration: const BoxDecoration(
+                      color: AppColors.middleGray,
+                    ),
+                    children: <Widget>[
+                      _buildTableHeader("Biały"),
+                      _buildTableHeader("Wynik"),
+                      _buildTableHeader("Czarny"),
+                      _buildTableHeader("Data"),
                     ],
-                  );
-                }),
-              ],
+                  ),
+
+                  ...games.asMap().entries.map((MapEntry<int, Game> entry) {
+                    final int index = entry.key;
+                    final Game game = entry.value;
+
+                    Color backgroundColor;
+                    if (isDark) {
+                      if (index.isEven) {
+                        backgroundColor = AppColors.darkEvenRow;
+                      } else {
+                        backgroundColor = AppColors.darkOddRow;
+                      }
+                    } else {
+                      if (index.isEven) {
+                        backgroundColor = AppColors.lightEvenRow;
+                      } else {
+                        backgroundColor = AppColors.lightOddRow;
+                      }
+                    }
+                    return TableRow(
+                      decoration: BoxDecoration(color: backgroundColor),
+                      children: <Widget>[
+                        _buildTableCell(context, game.white, index),
+                        _buildTableCenterCell(
+                          context,
+                          game.result ?? "*",
+                          index,
+                        ),
+                        _buildTableCell(context, game.black, index),
+                        _buildTableCell(
+                          context,
+                          // ignore: lines_longer_than_80_chars
+                          '${game.year}.${game.month?.toString().padLeft(2, '0') ?? '??'}.${game.day?.toString().padLeft(2, '0') ?? '??'}',
+                          index,
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
-        );
-      },
     );
   }
 
-  Widget _buildTableHeader(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Text(
-        text,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
+  Widget _buildTableHeader(String text) => Padding(
+    padding: const EdgeInsets.all(12),
+    child: Text(
+      text,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+    ),
+  );
 
-  Widget _buildTableCell(BuildContext context, String text, int index) {
-    return InkWell(
-      onTap: () => _navigateToGame(context, index, base),
-      child: Padding(padding: const EdgeInsets.all(12.0), child: Text(text)),
-    );
-  }
+  Widget _buildTableCell(BuildContext context, String text, int index) =>
+      InkWell(
+        onTap: () => _navigateToGame(context, index, base),
+        child: Padding(padding: const EdgeInsets.all(12), child: Text(text)),
+      );
 
-  Widget _buildTableCenterCell(BuildContext context, String text, int index) {
-    return InkWell(
-      onTap: () => _navigateToGame(context, index, base),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Center(child: Text(text)),
-      ),
-    );
-  }
+  Widget _buildTableCenterCell(BuildContext context, String text, int index) =>
+      InkWell(
+        onTap: () => _navigateToGame(context, index, base),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Center(child: Text(text)),
+        ),
+      );
 }

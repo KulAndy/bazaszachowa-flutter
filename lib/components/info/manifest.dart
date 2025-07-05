@@ -1,9 +1,11 @@
-import 'package:bazaszachowa_flutter/components/app/app_text_span.dart';
-import 'package:bazaszachowa_flutter/components/app/link.dart';
-import 'package:bazaszachowa_flutter/components/app/separator.dart';
-import 'package:flutter/material.dart';
-import 'package:bazaszachowa_flutter/screens/license.dart';
-import 'package:flutter/gestures.dart';
+// ignore_for_file: lines_longer_than_80_chars
+
+import "package:bazaszachowa_flutter/components/app/app_text_span.dart";
+import "package:bazaszachowa_flutter/components/app/link.dart";
+import "package:bazaszachowa_flutter/components/app/separator.dart";
+import "package:bazaszachowa_flutter/screens/license.dart";
+import "package:flutter/gestures.dart";
+import "package:flutter/material.dart";
 
 class Manifest extends StatelessWidget {
   const Manifest({super.key});
@@ -15,7 +17,7 @@ class Manifest extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const License(title: "Licencja"),
+            builder: (BuildContext context) => const License(title: "Licencja"),
           ),
         );
       };
@@ -24,45 +26,45 @@ class Manifest extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const Text(
-          'Z uwagi na to, że aktualnie w Polsce nie ma serwisu udostępniającego partie szachowe, '
-          'bo jedyny istniejący został zawieszony, a jest to idea godna kontynuowania, '
-          'lecz PZSzach, czy którykolwiek WZSzach nie jest zainteresowany takim projektem, '
-          'powstała ta strona. \nStrona z założenia ma pomagać graczom w przygotowaniu, '
-          'co pomoże w podwyższeniu poziomu sportowego. Osoby, które w nieuczciwy sposób '
-          'chcą zyskać przewagę poprzez usunięcie ich z bazy powinny zapoznać się z takimi pojęciami jak ',
+          "Z uwagi na to, że aktualnie w Polsce nie ma serwisu udostępniającego partie szachowe, "
+          "bo jedyny istniejący został zawieszony, a jest to idea godna kontynuowania, "
+          "lecz PZSzach, czy którykolwiek WZSzach nie jest zainteresowany takim projektem, "
+          "powstała ta strona. \nStrona z założenia ma pomagać graczom w przygotowaniu, "
+          "co pomoże w podwyższeniu poziomu sportowego. Osoby, które w nieuczciwy sposób "
+          "chcą zyskać przewagę poprzez usunięcie ich z bazy powinny zapoznać się z takimi pojęciami jak ",
         ),
         RichText(
           text: AppTextSpan(
             children: <TextSpan>[
               Link(
-                text: 'honor',
-                href: 'https://pl.wikipedia.org/wiki/Honor_(etyka)',
+                text: "honor",
+                href: "https://pl.wikipedia.org/wiki/Honor_(etyka)",
                 context: context,
               ),
-              const TextSpan(text: ', '),
+              const TextSpan(text: ", "),
               Link(
-                text: 'godność człowieka',
+                text: "godność człowieka",
                 context: context,
-                href: 'https://pl.wikipedia.org/wiki/Godność',
+                href: "https://pl.wikipedia.org/wiki/Godność",
               ),
-              const TextSpan(text: ' i '),
+              const TextSpan(text: " i "),
               Link(
-                text: 'postawa fair play',
+                text: "postawa fair play",
                 context: context,
-                href: 'https://pl.wikipedia.org/wiki/Fair_play',
+                href: "https://pl.wikipedia.org/wiki/Fair_play",
               ),
-              const TextSpan(text: '.'),
+              const TextSpan(text: "."),
             ],
             context: context,
           ),
         ),
-        const Separator(height: 10),
+        const Separator(),
         RichText(
           text: AppTextSpan(
             children: <TextSpan>[
               const TextSpan(
                 text:
-                    'Baza partii będzie aktualizowana mniej więcej raz na miesiąc i można z niej korzystać w zgodzie z zamieszczoną na stronie ',
+                    "Baza partii będzie aktualizowana mniej więcej raz na miesiąc i można z niej korzystać w zgodzie z zamieszczoną na stronie ",
               ),
               TextSpan(
                 text: "licencją",
@@ -72,7 +74,7 @@ class Manifest extends StatelessWidget {
                 ),
                 recognizer: recognizer,
               ),
-              const TextSpan(text: ' 🍺.'),
+              const TextSpan(text: " 🍺."),
             ],
             context: context,
           ),

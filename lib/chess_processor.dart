@@ -1,34 +1,29 @@
-import 'package:bazaszachowa_flutter/types/game.dart';
-import 'package:bazaszachowa_flutter/types/move.dart';
-import 'package:chess/chess.dart' as chess_lib;
+import "package:bazaszachowa_flutter/types/game.dart";
+import "package:bazaszachowa_flutter/types/move.dart";
+import "package:chess/chess.dart" as chess_lib;
 
 String cutStringToSecondSpace(String inputString) {
-  final lastSpaceIndex = inputString.indexOf(' ', inputString.indexOf(' ') + 1);
+  final int lastSpaceIndex = inputString.indexOf(
+    " ",
+    inputString.indexOf(" ") + 1,
+  );
   return inputString.substring(0, lastSpaceIndex);
 }
 
 const int firstBatchLimit = 40;
 
 class Stats {
+  Stats({this.count = 0, this.points = 0});
   int count;
   double points;
 
-  Stats({this.count = 0, this.points = 0});
-
-  Map<String, dynamic> toJson() {
-    return {'count': count, 'points': points};
-  }
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    "count": count,
+    "points": points,
+  };
 }
 
 class MoveData {
-  int games;
-  double points;
-  List<int> years;
-  Map<int, Stats> stats;
-  final String from;
-  final String to;
-  final String? promotion;
-
   MoveData({
     required this.games,
     required this.points,
@@ -38,63 +33,74 @@ class MoveData {
     required this.to,
     required this.promotion,
   });
+  int games;
+  double points;
+  List<int> years;
+  Map<int, Stats> stats;
+  final String from;
+  final String to;
+  final String? promotion;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'games': games,
-      'points': points,
-      'years': years,
-      'stats': stats.map(
-        (key, value) => MapEntry(key.toString(), value.toJson()),
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    "games": games,
+    "points": points,
+    "years": years,
+    "stats": stats.map(
+      (int key, Stats value) => MapEntry<String, Map<String, dynamic>>(
+        key.toString(),
+        value.toJson(),
       ),
-      'from': from,
-      'to': to,
-      'promotion': promotion,
-    };
-  }
+    ),
+    "from": from,
+    "to": to,
+    "promotion": promotion,
+  };
 }
 
 class FenData {
-  Map<String, MoveData> moves = {};
-  List<int> indexes = [];
+  Map<String, MoveData> moves = <String, MoveData>{};
+  List<int> indexes = <int>[];
 
-  Map<String, dynamic> toJson() {
-    return {
-      ...moves.map((key, value) => MapEntry(key, value.toJson())),
-      'indexes': indexes,
-    };
-  }
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    ...moves.map(
+      (String key, MoveData value) =>
+          MapEntry<String, Map<String, dynamic>>(key, value.toJson()),
+    ),
+    "indexes": indexes,
+  };
 }
 
 class ChessProcessor {
   String currentFEN = "";
-  Map<String, FenData> fensObj = {};
-  List<Game> games = [];
+  Map<String, FenData> fensObj = <String, FenData>{};
+  List<Game> games = <Game>[];
   bool isCompleted = false;
 
   Future<Map<String, FenData>> getTree(List<Game> rows) async {
     isCompleted = false;
     games = rows;
-    final fensPromises = rows.map((row) => getFENsFirstBatch(row));
-    final fensArray = await Future.wait(fensPromises);
-    fensObj = mergeFensArray(fensArray);
-
-    return fensObj;
+    final Iterable<Future<Map<String, FenData>>> fensPromises = rows.map(
+      getFENsFirstBatch,
+    );
+    final List<Map<String, FenData>> fensArray = await Future.wait(
+      fensPromises,
+    );
+    return mergeFensArray(fensArray);
   }
 
   Map<String, FenData> mergeFensArray(List<Map<String, FenData>> fensArray) {
-    final Map<String, FenData> mergedFensObj = {};
-    for (final fens in fensArray) {
-      fens.forEach((fen, data) {
+    final Map<String, FenData> mergedFensObj = <String, FenData>{};
+    for (final Map<String, FenData> fens in fensArray) {
+      fens.forEach((String fen, FenData data) {
         if (mergedFensObj.containsKey(fen)) {
           mergedFensObj[fen]!.indexes.addAll(data.indexes);
-          data.moves.forEach((move, moveData) {
+          data.moves.forEach((String move, MoveData moveData) {
             if (mergedFensObj[fen]!.moves.containsKey(move)) {
-              final existingMoveData = mergedFensObj[fen]!.moves[move]!;
-              existingMoveData.games += moveData.games;
-              existingMoveData.points += moveData.points;
+              final MoveData existingMoveData = mergedFensObj[fen]!.moves[move]!
+                ..games += moveData.games
+                ..points += moveData.points;
               existingMoveData.years.addAll(moveData.years);
-              moveData.stats.forEach((year, stat) {
+              moveData.stats.forEach((int year, Stats stat) {
                 if (existingMoveData.stats.containsKey(year)) {
                   existingMoveData.stats[year]!.count += stat.count;
                   existingMoveData.stats[year]!.points += stat.points;
@@ -117,70 +123,71 @@ class ChessProcessor {
   }
 
   Future<Map<String, FenData>> getFENsFirstBatch(Game row) async {
-    final moves = row.moves;
-    final points = row.result == '1-0'
+    final List<Move> moves = row.moves;
+    final double points = row.result == "1-0"
         ? 1.0
-        : row.result == '0-1'
+        : row.result == "0-1"
         ? 0.0
         : 0.5;
-    final chess = chess_lib.Chess();
-    final Map<String, FenData> fens = {};
+    final chess_lib.Chess chess = chess_lib.Chess();
+    final Map<String, FenData> fens = <String, FenData>{};
     int i = 0;
 
-    for (final move in moves) {
-      final result = await processMove(
+    for (final Move move in moves) {
+      final Map<String, dynamic> result = await processMove(
         chess,
         move,
-        i % 2 == 0 ? points : 1 - points,
+        i.isEven ? points : 1 - points,
         row.year,
       );
-      if (result['fen'] != null && result['doneMove'] != null) {
-        final fen = result['fen']!;
+      if (result["fen"] != null && result["doneMove"] != null) {
+        final String fen = result["fen"];
         if (fens.containsKey(fen)) {
-          if (fens[fen]!.moves.containsKey(result['doneMove']!['san'])) {
-            final moveData = fens[fen]!.moves[result['doneMove']!['san']]!;
-            moveData.games += 1;
-            moveData.points += result['data']['points'];
-            moveData.years.addAll(result['data']['years']);
+          if (fens[fen]!.moves.containsKey(result["doneMove"]!["san"])) {
+            final MoveData moveData =
+                fens[fen]!.moves[result["doneMove"]!["san"]]!
+                  ..games += 1
+                  ..points += result["data"]["points"];
+            moveData.years.addAll(result["data"]["years"]);
             if (!moveData.stats.containsKey(row.year)) {
               moveData.stats[row.year] = Stats()
                 ..count = 1
-                ..points = result['data']['points'];
+                ..points = result["data"]["points"];
             }
           } else {
-            fens[fen]!.moves[result['doneMove']!['san']] = MoveData(
-              from: result['doneMove']!['from'],
-              to: result['doneMove']!['to'],
-              promotion: result['doneMove']!['promotion'],
+            fens[fen]!.moves[result["doneMove"]!["san"]] = MoveData(
+              from: result["doneMove"]!["from"],
+              to: result["doneMove"]!["to"],
+              promotion: result["doneMove"]!["promotion"],
               games: 1,
-              points: result['data']['points'],
-              years: result['data']['years'],
-              stats: {
+              points: result["data"]["points"],
+              years: result["data"]["years"],
+              stats: <int, Stats>{
                 row.year: Stats()
                   ..count = 1
-                  ..points = result['data']['points'],
+                  ..points = result["data"]["points"],
               },
             );
           }
         } else {
           fens[fen] = FenData()
-            ..moves[result['doneMove']!['san']] = MoveData(
-              from: result['doneMove']!['from'],
-              to: result['doneMove']!['to'],
-              promotion: result['doneMove']!['promotion'],
+            ..moves[result["doneMove"]!["san"]] = MoveData(
+              from: result["doneMove"]!["from"],
+              to: result["doneMove"]!["to"],
+              promotion: result["doneMove"]!["promotion"],
               games: 1,
-              points: result['data']['points'],
-              years: result['data']['years'],
-              stats: {
+              points: result["data"]["points"],
+              years: result["data"]["years"],
+              stats: <int, Stats>{
                 row.year: Stats()
                   ..count = 1
-                  ..points = result['data']['points'],
+                  ..points = result["data"]["points"],
               },
             )
-            ..indexes = [row.id];
+            ..indexes = <int>[row.id];
         }
       }
-      if (i++ >= firstBatchLimit || result['doneMove'] == null) {
+      if (i++ >= firstBatchLimit || result["doneMove"] == null) {
         break;
       }
     }
@@ -193,71 +200,82 @@ class ChessProcessor {
     double points,
     int year,
   ) async {
-    final rawFen = chess.fen;
-    final fen = cutStringToSecondSpace(rawFen);
+    final String rawFen = chess.fen;
+    final String fen = cutStringToSecondSpace(rawFen);
 
-    if (!chess.move({
-      'from': move.from,
-      'to': move.to,
-      'promotion': move.promotion,
+    if (!chess.move(<String, String?>{
+      "from": move.from,
+      "to": move.to,
+      "promotion": move.promotion,
     })) {
       throw Exception("Cannot make move ${move.from} ${move.to} in $fen");
     }
 
-    var history = chess.getHistory({'verbose': true});
+    final List<dynamic> history = chess.getHistory(<dynamic, dynamic>{
+      "verbose": true,
+    });
 
     if (history.isEmpty) {
       throw Exception("No history after move ${move.from} ${move.to} in $fen");
     }
 
-    Map<String, dynamic> moveObj = history.last;
-    return {
-      'fen': fen,
-      'data': {
-        'games': 1,
-        'points': points,
-        'years': [year],
-        'stats': <int, Stats>{},
+    final Map<String, dynamic> moveObj = history.last;
+    return <String, dynamic>{
+      "fen": fen,
+      "data": <String, Object>{
+        "games": 1,
+        "points": points,
+        "years": <int>[year],
+        "stats": <int, Stats>{},
       },
-      'doneMove': moveObj,
+      "doneMove": moveObj,
     };
   }
 
   FenData searchFEN([String fen = chess_lib.Chess.DEFAULT_POSITION]) {
-    fen = fen.trim();
-    if (fen.isEmpty) {
-      fen = chess_lib.Chess.DEFAULT_POSITION;
+    String localFen = fen.trim();
+    if (localFen.isEmpty) {
+      localFen = chess_lib.Chess.DEFAULT_POSITION;
     }
-    fen = cutStringToSecondSpace(fen);
+    localFen = cutStringToSecondSpace(localFen);
 
-    if (fensObj.containsKey(fen)) {
-      final fens = FenData()
-        ..moves = Map.from(fensObj[fen]!.moves)
-        ..indexes = List.from(fensObj[fen]!.indexes);
-      final moves = fens.moves.entries
-          .map((entry) => {'move': entry.key, ...entry.value.toJson()})
-          .toList();
-      moves.sort((a, b) => (b['games'] as int).compareTo(a['games'] as int));
-      final sortedFenData = FenData()
+    if (fensObj.containsKey(localFen)) {
+      final FenData fens = FenData()
+        ..moves = Map<String, MoveData>.from(fensObj[localFen]!.moves)
+        ..indexes = List<int>.from(fensObj[localFen]!.indexes);
+      final List<Map<String, dynamic>> moves =
+          fens.moves.entries
+              .map(
+                (MapEntry<String, MoveData> entry) => <String, dynamic>{
+                  "move": entry.key,
+                  ...entry.value.toJson(),
+                },
+              )
+              .toList()
+            ..sort(
+              (Map<String, dynamic> a, Map<String, dynamic> b) =>
+                  (b["games"] as int).compareTo(a["games"] as int),
+            );
+      final FenData sortedFenData = FenData()
         ..indexes = fens.indexes
         ..moves = Map.fromEntries(
           moves.map(
-            (e) => MapEntry(
-              e['move'] as String,
+            (Map<String, dynamic> e) => MapEntry(
+              e["move"] as String,
               MoveData(
-                from: e['from'],
-                to: e['to'],
-                promotion: e['promotion'],
-                games: e['games'] as int,
-                points: (e['points'] as num).toDouble(),
-                years: List<int>.from(e['years'] as List),
+                from: e["from"],
+                to: e["to"],
+                promotion: e["promotion"],
+                games: e["games"] as int,
+                points: (e["points"] as num).toDouble(),
+                years: List<int>.from(e["years"] as List),
                 stats: Map<int, Stats>.from(
-                  (e['stats'] as Map).map(
-                    (key, value) => MapEntry(
+                  (e["stats"] as Map).map(
+                    (key, value) => MapEntry<dynamic, dynamic>(
                       int.parse(key),
                       Stats()
-                        ..count = (value['count'] as num).toInt()
-                        ..points = (value['points'] as num).toDouble(),
+                        ..count = (value["count"] as num).toInt()
+                        ..points = (value["points"] as num).toDouble(),
                     ),
                   ),
                 ),
@@ -272,56 +290,62 @@ class ChessProcessor {
   }
 
   Future<Map<String, FenData>> getFENsSecondBatch(Game row) async {
-    final moves = row.moves;
-    final points = row.result == '1-0'
+    final List<Move> moves = row.moves;
+    final double points = row.result == "1-0"
         ? 1.0
-        : row.result == '0-1'
+        : row.result == "0-1"
         ? 0.0
         : 0.5;
-    final chess = chess_lib.Chess();
-    final Map<String, FenData> fens = {};
+    final chess_lib.Chess chess = chess_lib.Chess();
+    final Map<String, FenData> fens = <String, FenData>{};
     int i = 0;
 
-    for (final move in moves) {
-      final result = await processMove(chess, move, points, row.year);
+    for (final Move move in moves) {
+      final Map<String, dynamic> result = await processMove(
+        chess,
+        move,
+        points,
+        row.year,
+      );
       if (i++ < firstBatchLimit) {
         continue;
       }
-      if (result['fen'] != null && result['doneMove'] != null) {
-        final fen = result['fen']!;
+      if (result["fen"] != null && result["doneMove"] != null) {
+        final String fen = result["fen"];
         if (fensObj.containsKey(fen)) {
           fensObj[fen]!.indexes.add(row.id);
-          if (fensObj[fen]!.moves.containsKey(result['doneMove']!['san'])) {
-            final moveData = fensObj[fen]!.moves[result['doneMove']!['san']]!;
-            moveData.games += 1;
-            moveData.points += result['data']['points'];
-            moveData.years.add(result['data']['years'][0]);
+          if (fensObj[fen]!.moves.containsKey(result["doneMove"]!["san"])) {
+            final MoveData moveData =
+                fensObj[fen]!.moves[result["doneMove"]!["san"]]!
+                  ..games += 1
+                  ..points += result["data"]["points"];
+            moveData.years.add(result["data"]["years"][0]);
           } else {
-            fensObj[fen]!.moves[result['doneMove']!['san']] = MoveData(
-              from: result['doneMove']!['from'],
-              to: result['doneMove']!['to'],
-              promotion: result['doneMove']!['promotion'],
+            fensObj[fen]!.moves[result["doneMove"]!["san"]] = MoveData(
+              from: result["doneMove"]!["from"],
+              to: result["doneMove"]!["to"],
+              promotion: result["doneMove"]!["promotion"],
               games: 1,
-              points: result['data']['points'],
-              years: [result['data']['years'][0]],
-              stats: {},
+              points: result["data"]["points"],
+              years: <int>[result["data"]["years"][0]],
+              stats: <int, Stats>{},
             );
           }
         } else {
           fensObj[fen] = FenData()
-            ..moves[result['doneMove']!['san']] = MoveData(
-              from: result['doneMove']!['from'],
-              to: result['doneMove']!['to'],
-              promotion: result['doneMove']!['promotion'],
+            ..moves[result["doneMove"]!["san"]] = MoveData(
+              from: result["doneMove"]!["from"],
+              to: result["doneMove"]!["to"],
+              promotion: result["doneMove"]!["promotion"],
               games: 1,
-              points: result['data']['points'],
-              years: [result['data']['years'][0]],
-              stats: {},
+              points: result["data"]["points"],
+              years: <int>[result["data"]["years"][0]],
+              stats: <int, Stats>{},
             )
-            ..indexes = [row.id];
+            ..indexes = <int>[row.id];
         }
       }
-      if (result['doneMove'] == null) {
+      if (result["doneMove"] == null) {
         return fens;
       }
     }
@@ -329,21 +353,21 @@ class ChessProcessor {
   }
 
   Future<void> completeTree() async {
-    const batchSize = 5;
+    const int batchSize = 5;
     int index = 0;
-    void processBatch() async {
+    Future<void> processBatch() async {
       for (int i = 0; i < batchSize && index < games.length; i++) {
-        final row = games[index];
+        final Game row = games[index];
         await getFENsSecondBatch(row);
         index++;
       }
       if (index < games.length) {
-        Future.delayed(Duration.zero, processBatch);
+        Future<void>.delayed(Duration.zero, processBatch);
       } else {
         isCompleted = true;
       }
     }
 
-    processBatch();
+    await processBatch();
   }
 }

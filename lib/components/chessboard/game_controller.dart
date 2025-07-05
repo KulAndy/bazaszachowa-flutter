@@ -1,19 +1,20 @@
-import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:dartchess/dartchess.dart' as dart_chess;
-import 'package:chessground/chessground.dart';
-import 'package:chess/chess.dart' as chess_lib;
-import 'package:bazaszachowa_flutter/types/game.dart';
-import 'package:bazaszachowa_flutter/types/variant_move.dart';
-import 'package:bazaszachowa_flutter/components/chessboard/board.dart';
-import 'package:bazaszachowa_flutter/components/chessboard/game_bar.dart';
-import 'package:flutter/services.dart';
+import "dart:math";
+
+import "package:bazaszachowa_flutter/components/chessboard/board.dart";
+import "package:bazaszachowa_flutter/components/chessboard/game_bar.dart";
+import "package:bazaszachowa_flutter/types/game.dart";
+import "package:bazaszachowa_flutter/types/move.dart";
+import "package:bazaszachowa_flutter/types/variant_move.dart";
+import "package:chess/chess.dart" as chess_lib;
+import "package:chessground/chessground.dart";
+import "package:dartchess/dartchess.dart" as dart_chess;
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 class GameController extends StatefulWidget {
+  const GameController({required this.game, super.key, this.onMove});
   final Game game;
   final Function(String)? onMove;
-
-  const GameController({super.key, required this.game, this.onMove});
 
   @override
   State<GameController> createState() => GameControllerState();
@@ -24,12 +25,12 @@ class GameControllerState extends State<GameController> {
   dart_chess.Side _orientation = dart_chess.Side.white;
   PlayerSide _turn = PlayerSide.white;
   dart_chess.NormalMove? _promotionMove;
-  List<VariantMove> _moves = [
+  List<VariantMove> _moves = <VariantMove>[
     VariantMove(
-      variations: [],
+      variations: <int>[],
       from: "",
       to: "",
-      turn: 'w',
+      turn: "w",
       fen: dart_chess.Chess.initial.fen,
       index: 0,
       san: "",
@@ -67,7 +68,7 @@ class GameControllerState extends State<GameController> {
     if (promotion != null) {
       uci += promotion;
     }
-    var move = dart_chess.NormalMove.fromUci(uci);
+    final dart_chess.NormalMove move = dart_chess.NormalMove.fromUci(uci);
     _onMove(move);
   }
 
@@ -81,47 +82,49 @@ class GameControllerState extends State<GameController> {
     _turn = PlayerSide.white;
   }
 
-  void _refresh() async {
+  Future<void> _refresh() async {
     try {
-      List<VariantMove> newMovesList = [
+      final List<VariantMove> newMovesList = <VariantMove>[
         VariantMove(
-          variations: [],
+          variations: <int>[],
           from: "",
           to: "",
-          turn: 'w',
+          turn: "w",
           fen: dart_chess.Chess.initial.fen,
           index: 0,
           san: "",
         ),
       ];
-      chess_lib.Chess chess = chess_lib.Chess();
+      final chess_lib.Chess chess = chess_lib.Chess();
 
       int counter = 1;
 
-      for (var move in widget.game.moves) {
-        if (!chess.move({
-          'from': move.from,
-          'to': move.to,
-          'promotion': move.promotion,
+      for (final Move move in widget.game.moves) {
+        if (!chess.move(<String, String?>{
+          "from": move.from,
+          "to": move.to,
+          "promotion": move.promotion,
         })) {
           break;
         }
-        var history = chess.getHistory({'verbose': true});
+        final List history = chess.getHistory(<dynamic, dynamic>{
+          "verbose": true,
+        });
 
         if (history.isEmpty) {
           break;
         }
 
-        Map<String, dynamic> moveObj = history.last;
-        VariantMove variantMove = VariantMove(
-          variations: [],
+        final Map<String, dynamic> moveObj = history.last;
+        final VariantMove variantMove = VariantMove(
+          variations: <int>[],
           from: move.from,
           to: move.to,
-          turn: counter % 2 == 0 ? 'w' : 'b',
+          turn: counter.isEven ? "w" : "b",
           fen: chess.fen,
           index: counter,
-          san: moveObj['san'],
-          promotion: moveObj['promotion'],
+          san: moveObj["san"],
+          promotion: moveObj["promotion"],
           prev: counter - 1,
         );
 
@@ -136,12 +139,12 @@ class GameControllerState extends State<GameController> {
         _initializeChessGame();
       });
     } catch (e) {
-      _moves = [
+      _moves = <VariantMove>[
         VariantMove(
-          variations: [],
+          variations: <int>[],
           from: "",
           to: "",
-          turn: 'w',
+          turn: "w",
           fen: dart_chess.Chess.initial.fen,
           index: 0,
           san: "",
@@ -167,17 +170,19 @@ class GameControllerState extends State<GameController> {
         });
       } else {
         setState(() {
-          int length = _moves.length;
-          chess_lib.Chess chess = chess_lib.Chess.fromFEN(_position.fen);
-          if (!chess.move({
-            'from': move.from.name,
-            'to': move.to.name,
-            'promotion': move.promotion?.letter,
+          final int length = _moves.length;
+          final chess_lib.Chess chess = chess_lib.Chess.fromFEN(_position.fen);
+          if (!chess.move(<String, String?>{
+            "from": move.from.name,
+            "to": move.to.name,
+            "promotion": move.promotion?.letter,
           })) {
             return;
           }
-          var history = chess.getHistory({'verbose': true});
-          Map<String, dynamic> moveObj = history.last;
+          final List history = chess.getHistory(<dynamic, dynamic>{
+            "verbose": true,
+          });
+          final Map<String, dynamic> moveObj = history.last;
 
           if (history.isEmpty) {
             return;
@@ -186,7 +191,7 @@ class GameControllerState extends State<GameController> {
           _position = _position.play(move);
 
           if (widget.onMove != null) {
-            widget.onMove!(_position.fen);
+            widget.onMove?.call(_position.fen);
           }
 
           if (_turn == PlayerSide.white) {
@@ -197,13 +202,13 @@ class GameControllerState extends State<GameController> {
 
           _moves.add(
             VariantMove(
-              variations: [],
+              variations: <int>[],
               from: move.from.name,
               to: move.to.name,
-              turn: _turn == PlayerSide.white ? 'w' : 'b',
+              turn: _turn == PlayerSide.white ? "w" : "b",
               fen: _position.fen,
               index: length,
-              san: moveObj['san'],
+              san: moveObj["san"],
               prev: _index,
               promotion: move.promotion?.letter,
             ),
@@ -221,14 +226,13 @@ class GameControllerState extends State<GameController> {
     }
   }
 
-  bool isPromotionPawnMove(dart_chess.NormalMove move) {
-    return move.promotion == null &&
-        _position.board.roleAt(move.from) == dart_chess.Role.pawn &&
-        ((move.to.rank == dart_chess.Rank.first &&
-                _position.turn == dart_chess.Side.black) ||
-            (move.to.rank == dart_chess.Rank.eighth &&
-                _position.turn == dart_chess.Side.white));
-  }
+  bool isPromotionPawnMove(dart_chess.NormalMove move) =>
+      move.promotion == null &&
+      _position.board.roleAt(move.from) == dart_chess.Role.pawn &&
+      ((move.to.rank == dart_chess.Rank.first &&
+              _position.turn == dart_chess.Side.black) ||
+          (move.to.rank == dart_chess.Rank.eighth &&
+              _position.turn == dart_chess.Side.white));
 
   void _goToFirst() {
     if (_index > 0) {
@@ -238,17 +242,17 @@ class GameControllerState extends State<GameController> {
         _position = dart_chess.Chess.initial;
       });
       if (widget.onMove != null) {
-        widget.onMove!(dart_chess.Chess.initial.fen);
+        widget.onMove?.call(dart_chess.Chess.initial.fen);
       }
     }
   }
 
   void _goToPrev() {
     if (_index > 0 && _moves.isNotEmpty && _moves[_index].prev != null) {
-      var prevIndex = _moves[_index].prev!;
+      final int prevIndex = _moves[_index].prev!;
       setState(() {
         _index = prevIndex;
-        _turn = _moves[prevIndex].turn == 'w'
+        _turn = _moves[prevIndex].turn == "w"
             ? PlayerSide.white
             : PlayerSide.black;
         _position = dart_chess.Chess.fromSetup(
@@ -256,7 +260,7 @@ class GameControllerState extends State<GameController> {
         );
       });
       if (widget.onMove != null) {
-        widget.onMove!(_moves[prevIndex].fen);
+        widget.onMove?.call(_moves[prevIndex].fen);
       }
     }
   }
@@ -265,10 +269,10 @@ class GameControllerState extends State<GameController> {
     if (_index < _moves.length - 1 &&
         _moves.isNotEmpty &&
         _moves[_index].next != null) {
-      var nextIndex = _moves[_index].next!;
+      final int nextIndex = _moves[_index].next!;
       setState(() {
         _index = nextIndex;
-        _turn = _moves[nextIndex].turn == 'w'
+        _turn = _moves[nextIndex].turn == "w"
             ? PlayerSide.white
             : PlayerSide.black;
         _position = dart_chess.Chess.fromSetup(
@@ -276,7 +280,7 @@ class GameControllerState extends State<GameController> {
         );
       });
       if (widget.onMove != null) {
-        widget.onMove!(_moves[nextIndex].fen);
+        widget.onMove?.call(_moves[nextIndex].fen);
       }
     }
   }
@@ -289,7 +293,7 @@ class GameControllerState extends State<GameController> {
       }
       setState(() {
         _index = lastIndex;
-        _turn = _moves[lastIndex].turn == 'w'
+        _turn = _moves[lastIndex].turn == "w"
             ? PlayerSide.white
             : PlayerSide.black;
         _position = dart_chess.Chess.fromSetup(
@@ -297,7 +301,7 @@ class GameControllerState extends State<GameController> {
         );
       });
       if (widget.onMove != null) {
-        widget.onMove!(_moves[lastIndex].fen);
+        widget.onMove?.call(_moves[lastIndex].fen);
       }
     }
   }
@@ -323,21 +327,21 @@ class GameControllerState extends State<GameController> {
   }
 
   String _generatePGN() {
-    StringBuffer pgn = StringBuffer();
-
-    pgn.writeln('[Event "${widget.game.event}"]');
-    pgn.writeln('[Site "${widget.game.site}"]');
-    pgn.writeln(
-      '[Date "${widget.game.year}-${widget.game.month?.toString().padLeft(2, '0')}-${widget.game.day?.toString().padLeft(2, '0')}"]',
-    );
-    pgn.writeln('[Round "${widget.game.round}"]');
-    pgn.writeln('[White "${widget.game.white}"]');
-    pgn.writeln('[Black "${widget.game.black}"]');
-    pgn.writeln('[Result "${widget.game.result}"]');
-    pgn.writeln('[WhiteElo "${widget.game.whiteElo}"]');
-    pgn.writeln('[BlackElo "${widget.game.blackElo}"]');
-    pgn.writeln('[ECO "${widget.game.eco}"]');
-    pgn.writeln();
+    final StringBuffer pgn = StringBuffer()
+      ..writeln('[Event "${widget.game.event}"]')
+      ..writeln('[Site "${widget.game.site}"]')
+      ..writeln(
+        // ignore: lines_longer_than_80_chars
+        '[Date "${widget.game.year}-${widget.game.month?.toString().padLeft(2, '0')}-${widget.game.day?.toString().padLeft(2, '0')}"]',
+      )
+      ..writeln('[Round "${widget.game.round}"]')
+      ..writeln('[White "${widget.game.white}"]')
+      ..writeln('[Black "${widget.game.black}"]')
+      ..writeln('[Result "${widget.game.result}"]')
+      ..writeln('[WhiteElo "${widget.game.whiteElo}"]')
+      ..writeln('[BlackElo "${widget.game.blackElo}"]')
+      ..writeln('[ECO "${widget.game.eco}"]')
+      ..writeln();
 
     int counter = 1;
     VariantMove move = _moves[0];
@@ -346,94 +350,101 @@ class GameControllerState extends State<GameController> {
       if (move.next == null) {
         break;
       }
-      if (++counter % 2 == 0) {
-        pgn.write("${(counter / 2).toInt()}. ");
+      if ((++counter).isEven) {
+        pgn.write("${counter ~/ 2}. ");
       }
-      move = _moves.firstWhere((item) => item.index == move.next);
+      move = _moves.firstWhere((VariantMove item) => item.index == move.next);
       pgn.write("${move.san} ");
     }
 
-    pgn.write(widget.game.result ?? '*');
+    pgn.write(widget.game.result ?? "*");
 
     return pgn.toString();
   }
 
   Future<void> _copyPGNToClipboard() async {
-    String pgn = _generatePGN();
+    final String pgn = _generatePGN();
 
     await Clipboard.setData(ClipboardData(text: pgn));
 
     ScaffoldMessenger.of(
+      // ignore: use_build_context_synchronously
       context,
-    ).showSnackBar(SnackBar(content: Text('PGN copied to clipboard')));
+    ).showSnackBar(const SnackBar(content: Text("PGN copied to clipboard")));
   }
 
   @override
   Widget build(BuildContext context) {
-    List<VariantMove> mainMoves = [];
+    final List<VariantMove> mainMoves = <VariantMove>[];
     VariantMove move = _moves[0];
 
     while (true) {
       if (move.next == null) {
         break;
       }
-      move = _moves.firstWhere((item) => item.index == move.next);
+      move = _moves.firstWhere((VariantMove item) => item.index == move.next);
       mainMoves.add(move);
     }
 
-    List<InlineSpan> notationSpans = [];
+    final List<InlineSpan> notationSpans = <InlineSpan>[];
 
-    for (var i = 0; i < mainMoves.length; i++) {
-      if (i % 2 == 0) {
+    for (int i = 0; i < mainMoves.length; i++) {
+      if (i.isEven) {
         notationSpans.add(
           TextSpan(
             text: "${(i / 2 + 1).toInt()}. ",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         );
       }
 
-      notationSpans.add(
-        WidgetSpan(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _index = mainMoves[i].index;
-                _turn = mainMoves[i].turn == 'w'
-                    ? PlayerSide.white
-                    : PlayerSide.black;
+      notationSpans
+        ..add(
+          WidgetSpan(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _index = mainMoves[i].index;
+                  _turn = mainMoves[i].turn == "w"
+                      ? PlayerSide.white
+                      : PlayerSide.black;
 
-                _position = dart_chess.Chess.fromSetup(
-                  dart_chess.Setup.parseFen(mainMoves[i].fen),
-                );
-              });
-            },
-            child: Container(
-              color: mainMoves[i].index == _index && _index > 0
-                  ? Colors.orange
-                  : Colors.transparent,
-              padding: EdgeInsets.symmetric(horizontal: 2.0),
-              child: Text(
-                mainMoves[i].san,
-                style: TextStyle(color: Colors.white),
+                  _position = dart_chess.Chess.fromSetup(
+                    dart_chess.Setup.parseFen(mainMoves[i].fen),
+                  );
+                });
+              },
+              child: Container(
+                color: mainMoves[i].index == _index && _index > 0
+                    ? Colors.orange
+                    : Colors.transparent,
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Text(
+                  mainMoves[i].san,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ),
-        ),
-      );
-
-      notationSpans.add(TextSpan(text: " "));
+        )
+        ..add(const TextSpan(text: " "));
     }
 
     notationSpans.add(
       TextSpan(
         text: "\n${widget.game.result ?? "*"}",
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
     );
 
     return Column(
-      children: [
+      children: <Widget>[
         BoardWidget(
           position: _position,
           orientation: _orientation,
@@ -456,7 +467,7 @@ class GameControllerState extends State<GameController> {
         ),
         Container(
           color: Colors.black,
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10),
           child: RichText(
             text: TextSpan(
               style: DefaultTextStyle.of(context).style,
