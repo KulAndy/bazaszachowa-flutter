@@ -54,6 +54,9 @@ class GameControllerState extends State<GameController> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
     _size = _initSize = min(screenHeight, screenWidth);
+    if (_size > 768) {
+      _size /= 2;
+    }
   }
 
   @override
