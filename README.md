@@ -1,4 +1,4 @@
-# bazaszachowa_flutter
+# bazaszachowa
 
 A new Flutter project.
 

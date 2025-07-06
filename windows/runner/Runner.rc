@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "bazaszachowa_flutter" "\0"
+            VALUE "FileDescription", "bazaszachowa" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "bazaszachowa_flutter" "\0"
+            VALUE "InternalName", "bazaszachowa" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "bazaszachowa_flutter.exe" "\0"
-            VALUE "ProductName", "bazaszachowa_flutter" "\0"
+            VALUE "OriginalFilename", "bazaszachowa.exe" "\0"
+            VALUE "ProductName", "bazaszachowa" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

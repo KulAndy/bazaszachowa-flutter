@@ -2,6 +2,7 @@ import "dart:math";
 
 import "package:bazaszachowa_flutter/components/chessboard/board.dart";
 import "package:bazaszachowa_flutter/components/chessboard/game_bar.dart";
+import "package:bazaszachowa_flutter/components/chessboard/notation.dart";
 import "package:bazaszachowa_flutter/types/game.dart";
 import "package:bazaszachowa_flutter/types/move.dart";
 import "package:bazaszachowa_flutter/types/variant_move.dart";
@@ -172,6 +173,7 @@ class GameControllerState extends State<GameController> {
         setState(() {
           final int length = _moves.length;
           final chess_lib.Chess chess = chess_lib.Chess.fromFEN(_position.fen);
+
           if (!chess.move(<String, String?>{
             "from": move.from.name,
             "to": move.to.name,
@@ -179,17 +181,17 @@ class GameControllerState extends State<GameController> {
           })) {
             return;
           }
+
           final List history = chess.getHistory(<dynamic, dynamic>{
             "verbose": true,
           });
-          final Map<String, dynamic> moveObj = history.last;
 
+          final Map<String, dynamic> moveObj = history.last;
           if (history.isEmpty) {
             return;
           }
 
           _position = _position.play(move);
-
           if (widget.onMove != null) {
             widget.onMove?.call(_position.fen);
           }
@@ -198,6 +200,26 @@ class GameControllerState extends State<GameController> {
             _turn = PlayerSide.black;
           } else {
             _turn = PlayerSide.white;
+          }
+
+          if (_moves.firstWhere((item) => item.index == _index).next != null &&
+              _moves.firstWhere((item) => item.index == _index).next! <
+                  _moves.length &&
+              _moves[_moves.firstWhere((item) => item.index == _index).next!]
+                      .san ==
+                  moveObj["san"]) {
+            _index = _moves.firstWhere((item) => item.index == _index).next!;
+            return;
+          }
+
+          for (final int variantIndex
+              in _moves.firstWhere((item) => item.index == _index).variations) {
+            if (variantIndex < _moves.length &&
+                _moves.firstWhere((item) => item.index == variantIndex).san ==
+                    moveObj["san"]) {
+              _index = variantIndex;
+              return;
+            }
           }
 
           _moves.add(
@@ -214,13 +236,23 @@ class GameControllerState extends State<GameController> {
             ),
           );
 
-          if (_moves[_index].next == null) {
-            _moves[_index].next = length;
+          if (_moves.firstWhere((item) => item.index == _index).next == null) {
+            _moves.firstWhere((item) => item.index == _index).next = length;
           } else {
-            _moves[_index].variations.add(length);
+            _moves
+                .firstWhere(
+                  (item) =>
+                      item.index ==
+                      _moves.firstWhere((item) => item.index == _index).next,
+                )
+                .variations
+                .add(length);
           }
 
-          _index = length;
+          setState(() {
+            _index = length;
+            _moves = [..._moves];
+          });
         });
       }
     }
@@ -248,19 +280,27 @@ class GameControllerState extends State<GameController> {
   }
 
   void _goToPrev() {
-    if (_index > 0 && _moves.isNotEmpty && _moves[_index].prev != null) {
-      final int prevIndex = _moves[_index].prev!;
+    if (_index > 0 &&
+        _moves.isNotEmpty &&
+        _moves.firstWhere((item) => item.index == _index).prev != null) {
+      final int prevIndex = _moves
+          .firstWhere((item) => item.index == _index)
+          .prev!;
       setState(() {
         _index = prevIndex;
-        _turn = _moves[prevIndex].turn == "w"
+        _turn = _moves.firstWhere((item) => item.index == prevIndex).turn == "w"
             ? PlayerSide.white
             : PlayerSide.black;
         _position = dart_chess.Chess.fromSetup(
-          dart_chess.Setup.parseFen(_moves[prevIndex].fen),
+          dart_chess.Setup.parseFen(
+            _moves.firstWhere((item) => item.index == prevIndex).fen,
+          ),
         );
       });
       if (widget.onMove != null) {
-        widget.onMove?.call(_moves[prevIndex].fen);
+        widget.onMove?.call(
+          _moves.firstWhere((item) => item.index == prevIndex).fen,
+        );
       }
     }
   }
@@ -268,19 +308,25 @@ class GameControllerState extends State<GameController> {
   void _goToNext() {
     if (_index < _moves.length - 1 &&
         _moves.isNotEmpty &&
-        _moves[_index].next != null) {
-      final int nextIndex = _moves[_index].next!;
+        _moves.firstWhere((item) => item.index == _index).next != null) {
+      final int nextIndex = _moves
+          .firstWhere((item) => item.index == _index)
+          .next!;
       setState(() {
         _index = nextIndex;
-        _turn = _moves[nextIndex].turn == "w"
+        _turn = _moves.firstWhere((item) => item.index == nextIndex).turn == "w"
             ? PlayerSide.white
             : PlayerSide.black;
         _position = dart_chess.Chess.fromSetup(
-          dart_chess.Setup.parseFen(_moves[nextIndex].fen),
+          dart_chess.Setup.parseFen(
+            _moves.firstWhere((item) => item.index == nextIndex).fen,
+          ),
         );
       });
       if (widget.onMove != null) {
-        widget.onMove?.call(_moves[nextIndex].fen);
+        widget.onMove?.call(
+          _moves.firstWhere((item) => item.index == nextIndex).fen,
+        );
       }
     }
   }
@@ -288,20 +334,25 @@ class GameControllerState extends State<GameController> {
   void _goToLast() {
     if (_index < _moves.length - 1 && _moves.isNotEmpty) {
       int lastIndex = _index;
-      while (_moves[lastIndex].next != null) {
-        lastIndex = _moves[lastIndex].next!;
+      while (_moves.firstWhere((item) => item.index == lastIndex).next !=
+          null) {
+        lastIndex = _moves.firstWhere((item) => item.index == lastIndex).next!;
       }
       setState(() {
         _index = lastIndex;
-        _turn = _moves[lastIndex].turn == "w"
+        _turn = _moves.firstWhere((item) => item.index == lastIndex).turn == "w"
             ? PlayerSide.white
             : PlayerSide.black;
         _position = dart_chess.Chess.fromSetup(
-          dart_chess.Setup.parseFen(_moves[lastIndex].fen),
+          dart_chess.Setup.parseFen(
+            _moves.firstWhere((item) => item.index == lastIndex).fen,
+          ),
         );
       });
       if (widget.onMove != null) {
-        widget.onMove?.call(_moves[lastIndex].fen);
+        widget.onMove?.call(
+          _moves.firstWhere((item) => item.index == lastIndex).fen,
+        );
       }
     }
   }
@@ -374,108 +425,39 @@ class GameControllerState extends State<GameController> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final List<VariantMove> mainMoves = <VariantMove>[];
-    VariantMove move = _moves[0];
-
-    while (true) {
-      if (move.next == null) {
-        break;
-      }
-      move = _moves.firstWhere((VariantMove item) => item.index == move.next);
-      mainMoves.add(move);
-    }
-
-    final List<InlineSpan> notationSpans = <InlineSpan>[];
-
-    for (int i = 0; i < mainMoves.length; i++) {
-      if (i.isEven) {
-        notationSpans.add(
-          TextSpan(
-            text: "${(i / 2 + 1).toInt()}. ",
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        );
-      }
-
-      notationSpans
-        ..add(
-          WidgetSpan(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _index = mainMoves[i].index;
-                  _turn = mainMoves[i].turn == "w"
-                      ? PlayerSide.white
-                      : PlayerSide.black;
-
-                  _position = dart_chess.Chess.fromSetup(
-                    dart_chess.Setup.parseFen(mainMoves[i].fen),
-                  );
-                });
-              },
-              child: Container(
-                color: mainMoves[i].index == _index && _index > 0
-                    ? Colors.orange
-                    : Colors.transparent,
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Text(
-                  mainMoves[i].san,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        )
-        ..add(const TextSpan(text: " "));
-    }
-
-    notationSpans.add(
-      TextSpan(
-        text: "\n${widget.game.result ?? "*"}",
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
+  Widget build(BuildContext context) => Column(
+    children: <Widget>[
+      BoardWidget(
+        position: _position,
+        orientation: _orientation,
+        turn: _turn,
+        promotionMove: _promotionMove,
+        onMove: _onMove,
+        onPromotionSelection: _onPromotionSelection,
+        size: _size,
       ),
-    );
-
-    return Column(
-      children: <Widget>[
-        BoardWidget(
-          position: _position,
-          orientation: _orientation,
-          turn: _turn,
-          promotionMove: _promotionMove,
-          onMove: _onMove,
-          onPromotionSelection: _onPromotionSelection,
-          size: _size,
-        ),
-        GameBar(
-          goToFirst: _index <= 0 ? null : _goToFirst,
-          goToPrev: _index <= 0 ? null : _goToPrev,
-          goToNext: _index >= _moves.length - 1 ? null : _goToNext,
-          goToLast: _index >= _moves.length - 1 ? null : _goToLast,
-          flip: _flip,
-          copy: _copyPGNToClipboard,
-          zoomIn: _zoomIn,
-          zoomOut: _zoomOut,
-          index: _index,
-        ),
-        Container(
-          color: Colors.black,
-          padding: const EdgeInsets.all(10),
-          child: RichText(
-            text: TextSpan(
-              style: DefaultTextStyle.of(context).style,
-              children: notationSpans,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+      GameBar(
+        goToFirst: _index <= 0 ? null : _goToFirst,
+        goToPrev: _index <= 0 ? null : _goToPrev,
+        goToNext: _index >= _moves.length - 1 ? null : _goToNext,
+        goToLast: _index >= _moves.length - 1 ? null : _goToLast,
+        flip: _flip,
+        copy: _copyPGNToClipboard,
+        zoomIn: _zoomIn,
+        zoomOut: _zoomOut,
+        index: _index,
+      ),
+      Notation(
+        callback: (newIndex, turn, position) => setState(() {
+          _index = newIndex;
+          _turn = turn;
+          _position = position;
+        }),
+        moves: _moves,
+        result: widget.game.result,
+        currentIndex: _index,
+        height: 400,
+      ),
+    ],
+  );
 }

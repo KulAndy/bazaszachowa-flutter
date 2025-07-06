@@ -1,6 +1,6 @@
 {
-    "name": "bazaszachowa_flutter",
-    "short_name": "bazaszachowa_flutter",
+    "name": "bazaszachowa",
+    "short_name": "bazaszachowa",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

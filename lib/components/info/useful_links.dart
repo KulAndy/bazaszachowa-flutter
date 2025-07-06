@@ -18,24 +18,30 @@ class UsefulLinks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      alignment: Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const Text("Przydatne linki"),
-          ...links.entries.map((MapEntry<String, List<String>> entry) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(entry.key),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: entry.value.map((String url) => RichText(
-                      text: Link(text: url, href: url, context: context),
-                    )).toList(),
-                ),
-              ],
-            )),
-        ],
-      ),
-    );
+    alignment: Alignment.centerLeft,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Text("Przydatne linki"),
+        ...links.entries.map(
+          (MapEntry<String, List<String>> entry) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(entry.key),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: entry.value
+                    .map(
+                      (String url) => RichText(
+                        text: Link(text: url, href: url, context: context),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
