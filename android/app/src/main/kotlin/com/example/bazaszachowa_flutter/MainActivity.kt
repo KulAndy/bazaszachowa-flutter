@@ -1,4 +1,4 @@
-package com.example.bazaszachowa
+package pl.bazaszachowa
 
 import io.flutter.embedding.android.FlutterActivity
 

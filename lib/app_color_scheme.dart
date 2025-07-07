@@ -42,7 +42,7 @@ class AppColorScheme {
     dividerColor: AppColors.middleGray,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.lightFontColor,
+        backgroundColor: AppColors.lightFooter,
         foregroundColor: AppColors.lightFontColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
