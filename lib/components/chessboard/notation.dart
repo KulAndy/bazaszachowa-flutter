@@ -20,7 +20,7 @@ class Notation extends StatelessWidget {
   final int currentIndex;
   final double height;
 
-  List<TextSpan> processMove(VariantMove move, bool isMain, int moveNo) {
+  List<TextSpan> _processMove(VariantMove move, bool isMain, int moveNo) {
     final List<TextSpan> moveComponents = [];
 
     if (move.turn == "b") {
@@ -61,7 +61,7 @@ class Notation extends StatelessWidget {
       }
       moveComponents
         ..addAll(
-          processMove(
+          _processMove(
             moves.firstWhere((item) => item.index == variationIndex),
             false,
             moveNo,
@@ -80,7 +80,9 @@ class Notation extends StatelessWidget {
       if (move.turn == "w") {
         nextMoveNo += 1;
       }
-      moveComponents.addAll(processMove(moves[move.next!], isMain, nextMoveNo));
+      moveComponents.addAll(
+        _processMove(moves[move.next!], isMain, nextMoveNo),
+      );
     }
 
     return moveComponents;
@@ -91,7 +93,7 @@ class Notation extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     List<TextSpan> moveComponents = [];
     if (moves.isNotEmpty && moves[0].next != null) {
-      moveComponents = processMove(moves[moves[0].next!], true, 1);
+      moveComponents = _processMove(moves[0], true, 0);
     }
 
     if (result != null) {

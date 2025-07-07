@@ -380,6 +380,44 @@ class GameControllerState extends State<GameController> {
     });
   }
 
+  List<String> _processMove(VariantMove move, bool isMain, int moveNo) {
+    final List<String> moveComponents = [];
+
+    if (move.turn == "b") {
+      moveComponents.add("$moveNo. ");
+    }
+
+    moveComponents.add("${move.san} ");
+
+    for (final int variationIndex in move.variations) {
+      moveComponents.add(" (");
+      if (move.turn == "w") {
+        moveComponents.add("$moveNo... ");
+      }
+      moveComponents
+        ..addAll(
+          _processMove(
+            _moves.firstWhere((item) => item.index == variationIndex),
+            false,
+            moveNo,
+          ),
+        )
+        ..add(") ");
+    }
+
+    if (move.next != null) {
+      int nextMoveNo = moveNo;
+      if (move.turn == "w") {
+        nextMoveNo += 1;
+      }
+      moveComponents.addAll(
+        _processMove(_moves[move.next!], isMain, nextMoveNo),
+      );
+    }
+
+    return moveComponents;
+  }
+
   String _generatePGN() {
     final StringBuffer pgn = StringBuffer()
       ..writeln('[Event "${widget.game.event}"]')
@@ -395,23 +433,9 @@ class GameControllerState extends State<GameController> {
       ..writeln('[WhiteElo "${widget.game.whiteElo}"]')
       ..writeln('[BlackElo "${widget.game.blackElo}"]')
       ..writeln('[ECO "${widget.game.eco}"]')
-      ..writeln();
-
-    int counter = 1;
-    VariantMove move = _moves[0];
-
-    while (true) {
-      if (move.next == null) {
-        break;
-      }
-      if ((++counter).isEven) {
-        pgn.write("${counter ~/ 2}. ");
-      }
-      move = _moves.firstWhere((VariantMove item) => item.index == move.next);
-      pgn.write("${move.san} ");
-    }
-
-    pgn.write(widget.game.result ?? "*");
+      ..writeln()
+      ..writeAll(_processMove(_moves[0], true, 0))
+      ..write(widget.game.result ?? "*");
 
     return pgn.toString();
   }
