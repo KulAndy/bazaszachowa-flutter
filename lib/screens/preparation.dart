@@ -9,13 +9,8 @@ import "package:chess/chess.dart" as chess;
 import "package:flutter/material.dart";
 
 class Preparation extends StatefulWidget {
-  const Preparation({
-    required this.title,
-    required this.playerName,
-    required this.color,
-    super.key,
-  });
-  final String title;
+  const Preparation({required this.playerName, required this.color, super.key});
+  String get title => "$playerName ${color == "white" ? "białe" : "czarne"}";
   final String playerName;
   final String color;
 

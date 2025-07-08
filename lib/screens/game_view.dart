@@ -1,6 +1,9 @@
 import "package:bazaszachowa_flutter/api_config.dart";
+import "package:bazaszachowa_flutter/components/app/app_text_span.dart";
 import "package:bazaszachowa_flutter/components/chessboard/game_controller.dart";
+import "package:bazaszachowa_flutter/screens/player.dart";
 import "package:bazaszachowa_flutter/types/game.dart";
+import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 
 class GameView extends StatefulWidget {
@@ -51,6 +54,15 @@ class _GameViewState extends State<GameView> {
     } catch (e) {
       setState(() => _game = null);
     }
+  }
+
+  void _goPlayer(String player) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => Player(playerName: player),
+      ),
+    );
   }
 
   @override
@@ -151,9 +163,27 @@ class _GameViewState extends State<GameView> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            // ignore: lines_longer_than_80_chars
-                            "${_game!.whiteElo ?? ''} ${_game!.white} ${_game!.result} ${_game!.black} ${_game!.blackElo ?? ''}",
+                          child: RichText(
+                            text: AppTextSpan(
+                              context: context,
+                              children: [
+                                TextSpan(text: "${_game!.whiteElo ?? ''} "),
+                                TextSpan(
+                                  style: const TextStyle(color: Colors.blue),
+                                  text: _game!.white,
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _goPlayer(_game!.white),
+                                ),
+                                TextSpan(text: " ${_game!.result} "),
+                                TextSpan(
+                                  style: const TextStyle(color: Colors.blue),
+                                  text: _game!.black,
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _goPlayer(_game!.black),
+                                ),
+                                TextSpan(text: "${_game!.blackElo ?? ''} "),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),

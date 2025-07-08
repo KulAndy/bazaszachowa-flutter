@@ -117,14 +117,8 @@ class _SearchPreparationState extends State<SearchPreparation> {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => Preparation(
-                      title:
-                          // ignore: lines_longer_than_80_chars
-                          '$_playerName ${_color == "white" ? "białe" : "czarne"}',
-
-                      playerName: _playerName,
-                      color: _color,
-                    ),
+                    builder: (BuildContext context) =>
+                        Preparation(playerName: _playerName, color: _color),
                   ),
                 ),
                 child: const Text("Szukaj"),

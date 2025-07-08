@@ -5,12 +5,14 @@ import "package:bazaszachowa_flutter/components/player/color_stats_data.dart";
 import "package:bazaszachowa_flutter/components/player/fide_data.dart";
 import "package:bazaszachowa_flutter/components/player/game_table.dart";
 import "package:bazaszachowa_flutter/components/player/polish_data.dart";
+import "package:bazaszachowa_flutter/screens/preparation.dart";
 import "package:bazaszachowa_flutter/types/fide_player.dart";
 import "package:bazaszachowa_flutter/types/game.dart";
 import "package:bazaszachowa_flutter/types/opening_stats.dart";
 import "package:bazaszachowa_flutter/types/player_range_stats.dart";
 import "package:bazaszachowa_flutter/types/poland_player.dart";
 import "package:flutter/material.dart";
+import "package:flutter_svg/flutter_svg.dart";
 
 class Player extends StatefulWidget {
   const Player({required this.playerName, super.key, this.opening, this.color});
@@ -130,6 +132,16 @@ class _PlayerState extends State<Player> {
     }
   }
 
+  void _goToPreparation(String color) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) =>
+            Preparation(playerName: widget.playerName, color: color),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(widget.playerName)),
@@ -184,6 +196,52 @@ class _PlayerState extends State<Player> {
                 ],
               ),
 
+            const SizedBox(height: 20),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [Text("Przygootowanie")],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _goToPreparation("white"),
+                        child: const Text(
+                          "Białe",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: () => _goToPreparation("black"),
+                        child: const Text(
+                          "Czarne",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+            SvgPicture.network(
+              ApiConfig.getImageUrl(name: widget.playerName),
+              placeholderBuilder: (context) =>
+                  const CircularProgressIndicator(),
+            ),
             const SizedBox(height: 20),
 
             if (_openingStats == null)

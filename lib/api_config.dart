@@ -17,6 +17,7 @@ class ApiConfig {
   static const String games = "/search_game";
   static const String filterGames = "/search_player_opening_game";
   static const String game = "/game";
+  static const String image = "/graph";
 
   static String _getSearchPlayersUrl(String query) =>
       "$baseUrl$searchPlayersEndpoint/${Uri.encodeComponent(query)}";
@@ -74,6 +75,9 @@ class ApiConfig {
 
   static String _getGameUrl({int gameId = 0, String base = "all"}) =>
       "$baseUrl$game/$base/$gameId";
+
+  static String getImageUrl({required String name, String type = "svg"}) =>
+      "$baseUrl$image/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}";
 
   static Future<List<String>> searchPlayer(String name) async {
     if (name.trim().length < 4) {

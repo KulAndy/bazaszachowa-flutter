@@ -483,7 +483,6 @@ class GameControllerState extends State<GameController> {
         moves: _moves,
         result: widget.game.result,
         currentIndex: _index,
-        height: 400,
       ),
     ],
   );
