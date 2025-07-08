@@ -37,7 +37,7 @@ class App extends StatelessWidget {
     title: "Baza szachowa",
     theme: AppColorScheme.lightTheme,
     darkTheme: AppColorScheme.darkTheme,
-    home: const Home(title: "Baza szachowa"),
+    home: const Home(),
     debugShowCheckedModeBanner: false,
   );
 }

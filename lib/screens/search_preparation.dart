@@ -7,9 +7,9 @@ import "package:bazaszachowa_flutter/screens/preparation.dart";
 import "package:flutter/material.dart";
 
 class SearchPreparation extends StatefulWidget {
-  const SearchPreparation({required this.title, super.key});
+  const SearchPreparation({super.key});
 
-  final String title;
+  String get title => "Przygotowanie";
 
   @override
   State<SearchPreparation> createState() => _SearchPreparationState();

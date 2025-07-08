@@ -6,9 +6,9 @@ import "package:bazaszachowa_flutter/screens/player.dart";
 import "package:flutter/material.dart";
 
 class Players extends StatefulWidget {
-  const Players({required this.title, super.key});
+  const Players({super.key});
 
-  final String title;
+  String get title => "Zawodnicy";
 
   @override
   State<Players> createState() => _PlayersState();

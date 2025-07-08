@@ -7,9 +7,9 @@ import "package:bazaszachowa_flutter/components/app/separator.dart";
 import "package:flutter/material.dart";
 
 class License extends StatefulWidget {
-  const License({required this.title, super.key});
+  const License({super.key});
 
-  final String title;
+  String get title => "Licencja";
 
   @override
   State<License> createState() => _LicenseState();

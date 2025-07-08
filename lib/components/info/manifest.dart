@@ -16,9 +16,7 @@ class Manifest extends StatelessWidget {
       ..onTap = () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => const License(title: "Licencja"),
-          ),
+          MaterialPageRoute(builder: (BuildContext context) => const License()),
         );
       };
 

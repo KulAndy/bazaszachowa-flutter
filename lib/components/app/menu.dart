@@ -26,8 +26,7 @@ class Menu extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    const Home(title: "Strona główna"),
+                builder: (BuildContext context) => const Home(),
               ),
             );
           },
@@ -38,8 +37,7 @@ class Menu extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    const Players(title: "Zawodnicy"),
+                builder: (BuildContext context) => const Players(),
               ),
             );
           },
@@ -64,7 +62,7 @@ class Menu extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (BuildContext context) => const Games(title: "Partie"),
+                builder: (BuildContext context) => const Games(),
               ),
             );
           },
@@ -75,8 +73,7 @@ class Menu extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    const SearchPreparation(title: "Przygotowanie"),
+                builder: (BuildContext context) => const SearchPreparation(),
               ),
             );
           },
@@ -88,8 +85,7 @@ class Menu extends StatelessWidget {
           onTap: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    const License(title: "Licencja"),
+                builder: (BuildContext context) => const License(),
               ),
             );
           },

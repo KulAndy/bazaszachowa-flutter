@@ -6,9 +6,9 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 
 class Home extends StatefulWidget {
-  const Home({required this.title, super.key});
+  const Home({super.key});
 
-  final String title;
+  String get title => "Strona główna";
 
   @override
   State<Home> createState() => _HomeState();

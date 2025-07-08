@@ -7,9 +7,9 @@ import "package:bazaszachowa_flutter/types/game.dart";
 import "package:flutter/material.dart";
 
 class Games extends StatefulWidget {
-  const Games({required this.title, super.key});
+  const Games({super.key});
 
-  final String title;
+  String get title => "Partie";
 
   @override
   State<Games> createState() => _GamesState();
