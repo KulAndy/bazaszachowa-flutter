@@ -97,6 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "11.0.4"
+  ffi:
+    dependency: transitive
+    description:
+      name: ffi
+      sha256: "289279317b4b16eb2bb7e271abccd4bf84ec9bdcbe999e278a94b804f5630418"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -261,6 +269,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.1"
+  stockfish_chess_engine:
+    dependency: "direct main"
+    description:
+      name: stockfish_chess_engine
+      sha256: "9349400ad696900b731c40d50c8459475f6739c07da0018a948de79f3c1d5b9d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.2"
   stream_channel:
     dependency: transitive
     description:

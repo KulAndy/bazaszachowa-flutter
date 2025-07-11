@@ -1,4 +1,6 @@
+import "package:bazaszachowa_flutter/components/chessboard/game_controller.dart";
 import "package:flutter/material.dart";
+import "package:font_awesome_flutter/font_awesome_flutter.dart";
 
 class GameBar extends StatefulWidget {
   const GameBar({
@@ -7,6 +9,8 @@ class GameBar extends StatefulWidget {
     required this.zoomIn,
     required this.zoomOut,
     required this.index,
+    required this.underBoard,
+    required this.toggleUnderBoard,
     super.key,
     this.goToFirst,
     this.goToPrev,
@@ -22,6 +26,8 @@ class GameBar extends StatefulWidget {
   final VoidCallback zoomIn;
   final VoidCallback zoomOut;
   final int index;
+  final UnderBoard underBoard;
+  final VoidCallback toggleUnderBoard;
 
   @override
   State<GameBar> createState() => _GameBarState();
@@ -90,6 +96,12 @@ class _GameBarState extends State<GameBar> {
             IconButton(
               icon: const Icon(Icons.zoom_out),
               onPressed: widget.zoomOut,
+            ),
+            IconButton(
+              icon: widget.underBoard == UnderBoard.notation
+                  ? const FaIcon(FontAwesomeIcons.fish)
+                  : const FaIcon(FontAwesomeIcons.fileLines),
+              onPressed: widget.toggleUnderBoard,
             ),
           ],
         ),

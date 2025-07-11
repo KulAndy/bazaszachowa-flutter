@@ -21,6 +21,8 @@ dependencies:
   http: ^1.4.0
   url_launcher: ^6.3.1
 
+  stockfish_chess_engine: ^0.8.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

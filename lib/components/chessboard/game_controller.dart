@@ -3,6 +3,7 @@ import "dart:math";
 import "package:bazaszachowa_flutter/components/chessboard/board.dart";
 import "package:bazaszachowa_flutter/components/chessboard/game_bar.dart";
 import "package:bazaszachowa_flutter/components/chessboard/notation.dart";
+import "package:bazaszachowa_flutter/components/chessboard/stockfish_analysis_widget.dart";
 import "package:bazaszachowa_flutter/types/game.dart";
 import "package:bazaszachowa_flutter/types/move.dart";
 import "package:bazaszachowa_flutter/types/variant_move.dart";
@@ -20,6 +21,8 @@ class GameController extends StatefulWidget {
   @override
   State<GameController> createState() => GameControllerState();
 }
+
+enum UnderBoard { notation, stockfish }
 
 class GameControllerState extends State<GameController> {
   dart_chess.Position _position = dart_chess.Chess.initial;
@@ -40,6 +43,7 @@ class GameControllerState extends State<GameController> {
   int _index = 0;
   double _size = 400;
   double _initSize = 400;
+  UnderBoard _underBoard = UnderBoard.notation;
 
   @override
   void initState() {
@@ -473,17 +477,32 @@ class GameControllerState extends State<GameController> {
         zoomIn: _zoomIn,
         zoomOut: _zoomOut,
         index: _index,
+        underBoard: _underBoard,
+        toggleUnderBoard: () {
+          if (_underBoard == UnderBoard.notation) {
+            setState(() {
+              _underBoard = UnderBoard.stockfish;
+            });
+          } else {
+            setState(() {
+              _underBoard = UnderBoard.notation;
+            });
+          }
+        },
       ),
-      Notation(
-        callback: (newIndex, turn, position) => setState(() {
-          _index = newIndex;
-          _turn = turn;
-          _position = position;
-        }),
-        moves: _moves,
-        result: widget.game.result,
-        currentIndex: _index,
-      ),
+      if (_underBoard == UnderBoard.notation)
+        Notation(
+          callback: (newIndex, turn, position) => setState(() {
+            _index = newIndex;
+            _turn = turn;
+            _position = position;
+          }),
+          moves: _moves,
+          result: widget.game.result,
+          currentIndex: _index,
+        )
+      else
+        StockfishAnalysisWidget(fen: _position.fen),
     ],
   );
 }
